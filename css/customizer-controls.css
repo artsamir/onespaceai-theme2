@@ -1,0 +1,289 @@
+/**
+ * Customizer Controls Styling
+ * 
+ * @package OnespaceTheme2
+ * @since 1.0.0
+ */
+
+/* Accordion Groups Container */
+.onespace-header-groups {
+    margin: 1rem 0;
+}
+
+/* Individual Group Styling */
+.onespace-group {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    background: #fff;
+    overflow: hidden;
+}
+
+.onespace-group:last-child {
+    margin-bottom: 0;
+}
+
+/* Group Header */
+.onespace-group__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    user-select: none;
+}
+
+.onespace-group__header:hover {
+    background: #e9ecef;
+}
+
+.onespace-group__header:focus {
+    outline: 2px solid #0073aa;
+    outline-offset: -2px;
+}
+
+.onespace-group__header h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #23282d;
+    flex: 1;
+}
+
+/* Chevron Icon */
+.onespace-group__chevron {
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #666;
+    transition: transform 0.3s ease;
+    margin-left: 0.5rem;
+}
+
+.onespace-group__chevron.expanded {
+    transform: rotate(180deg);
+}
+
+/* Group Body */
+.onespace-group__body {
+    padding: 0;
+    background: #fff;
+}
+
+.onespace-group__body .customize-control {
+    border-bottom: 1px solid #f0f0f0;
+    padding: 12px 16px;
+    margin: 0;
+}
+
+.onespace-group__body .customize-control:last-child {
+    border-bottom: none;
+}
+
+/* Control Labels */
+.onespace-group__body .customize-control-title {
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: #23282d;
+}
+
+/* Control Descriptions */
+.onespace-group__body .description {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+    line-height: 1.4;
+}
+
+/* Input Fields */
+.onespace-group__body input[type="text"],
+.onespace-group__body input[type="number"],
+.onespace-group__body input[type="url"],
+.onespace-group__body select,
+.onespace-group__body textarea {
+    width: 100%;
+    max-width: 300px;
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-size: 13px;
+}
+
+.onespace-group__body input[type="text"]:focus,
+.onespace-group__body input[type="number"]:focus,
+.onespace-group__body input[type="url"]:focus,
+.onespace-group__body select:focus,
+.onespace-group__body textarea:focus {
+    border-color: #0073aa;
+    outline: none;
+    box-shadow: 0 0 0 1px #0073aa;
+}
+
+/* Color Controls */
+.onespace-group__body .wp-color-picker {
+    width: 100px;
+}
+
+.onespace-group__body .wp-picker-container {
+    margin-top: 4px;
+}
+
+/* Range Controls */
+.onespace-group__body input[type="range"] {
+    width: 100%;
+    max-width: 200px;
+}
+
+/* Image Upload Controls */
+.onespace-group__body .customize-control-image .current,
+.onespace-group__body .customize-control-media .current {
+    margin-bottom: 8px;
+}
+
+.onespace-group__body .customize-control-image .placeholder,
+.onespace-group__body .customize-control-media .placeholder {
+    width: 100px;
+    height: 100px;
+    border: 2px dashed #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    font-size: 12px;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+/* Button Styling */
+.onespace-group__body .button {
+    font-size: 12px;
+    padding: 4px 12px;
+    height: auto;
+    line-height: 1.4;
+}
+
+/* Disabled Controls */
+.onespace-disabled {
+    opacity: 0.5 !important;
+    pointer-events: none;
+}
+
+.onespace-disabled .customize-control-title {
+    color: #999 !important;
+}
+
+/* Responsive Design */
+@media (max-width: 782px) {
+    .onespace-group__header {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .onespace-group__header h3 {
+        font-size: 13px;
+    }
+    
+    .onespace-group__body .customize-control {
+        padding: 10px 12px;
+    }
+    
+    .onespace-group__body input[type="text"],
+    .onespace-group__body input[type="number"],
+    .onespace-group__body input[type="url"],
+    .onespace-group__body select,
+    .onespace-group__body textarea {
+        max-width: 100%;
+    }
+}
+
+/* Accessibility Improvements */
+.onespace-group__header[aria-expanded="true"] {
+    background: #e9ecef;
+}
+
+.onespace-group__header[aria-expanded="true"] .onespace-group__chevron {
+    transform: rotate(180deg);
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .onespace-group {
+        border-color: #000;
+    }
+    
+    .onespace-group__header {
+        background: #f0f0f0;
+        border-bottom-color: #000;
+    }
+    
+    .onespace-group__header:hover {
+        background: #e0e0e0;
+    }
+    
+    .onespace-group__chevron {
+        border-top-color: #000;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .onespace-group__chevron,
+    .onespace-group__header {
+        transition: none;
+    }
+    
+    .onespace-group__body {
+        transition: none;
+    }
+}
+
+/* RTL Support */
+[dir="rtl"] .onespace-group__header {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .onespace-group__chevron {
+    margin-left: 0;
+    margin-right: 0.5rem;
+}
+
+/* Dark Mode Support (for WordPress dark mode) */
+@media (prefers-color-scheme: dark) {
+    .wp-customizer .onespace-group {
+        border-color: #3c434a;
+        background: #1d2327;
+    }
+    
+    .wp-customizer .onespace-group__header {
+        background: #2c3338;
+        border-bottom-color: #3c434a;
+        color: #f0f0f1;
+    }
+    
+    .wp-customizer .onespace-group__header h3 {
+        color: #f0f0f1;
+    }
+    
+    .wp-customizer .onespace-group__header:hover {
+        background: #32373c;
+    }
+    
+    .wp-customizer .onespace-group__body {
+        background: #1d2327;
+    }
+    
+    .wp-customizer .onespace-group__body .customize-control {
+        border-bottom-color: #3c434a;
+    }
+    
+    .wp-customizer .onespace-group__body .customize-control-title {
+        color: #f0f0f1;
+    }
+    
+    .wp-customizer .onespace-group__chevron {
+        border-top-color: #a7aaad;
+    }
+}
