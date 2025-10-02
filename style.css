@@ -228,6 +228,24 @@ body {
     object-fit: contain;
 }
 
+/* Mode-aware colors for toggle icon */
+/* Defaults can be overridden via Customizer variables if set */
+body.light-mode .toggle-icon {
+    background: var(--toggle-bg-color, #f5f7fa);
+    border-color: var(--toggle-border-color, rgba(0,0,0,0.15));
+}
+body.light-mode .toggle-icon:hover {
+    background: var(--toggle-hover-bg-light, #e9eef5);
+}
+
+body.dark-mode .toggle-icon {
+    background: var(--toggle-bg-color, #2b2f36);
+    border-color: var(--toggle-border-color, rgba(255,255,255,0.2));
+}
+body.dark-mode .toggle-icon:hover {
+    background: var(--toggle-hover-bg-dark, #3a3f47);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .site-header {
@@ -247,6 +265,42 @@ body {
 
     .header-utilities {
         justify-content: center;
+    }
+
+    /* Mobile search UX */
+    .mobile-search-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: none;
+        padding: 0;
+        margin: 0;
+        cursor: pointer;
+    }
+    /* Icon inside search toggle uses .toggle-icon base styles */
+
+    /* Hide the full search form by default on mobile */
+    .header-search {
+        display: none;
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+    /* When search is open, show it */
+    .search-open .header-search {
+        display: block;
+    }
+    /* When search is open, hide branding, keep toggle and search visible */
+    .search-open .site-branding {
+        display: none;
+    }
+    .search-open .header-utilities {
+        justify-content: center;
+    }
+    /* Keep dark/light toggle visible alongside search icon normally */
+    .header-utilities {
+        display: flex;
+        gap: 0.75rem;
     }
 }
 
@@ -420,31 +474,27 @@ select:focus {
 
 /* Footer Styling */
 .site-footer {
-    background: #333;
+    background: var(--footer-bg, #333);
     color: #fff;
-    padding: 2rem 0 1rem;
+    padding: 0;
     margin-top: 2rem;
 }
 
-.footer-widgets {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1rem 2rem;
-}
-
-.site-info {
-    border-top: 1px solid #555;
-    padding-top: 1rem;
+.footer-top {
+    padding: 2rem 0 1rem;
 }
 
 .footer-content {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 1rem;
+}
+
+.footer-widgets {
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    gap: 2rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 1.5rem;
 }
 
 .footer-branding a {
@@ -467,23 +517,56 @@ select:focus {
 }
 
 .footer-navigation a {
-    color: #fff;
+    color: var(--footer-menu-text-color, #fff);
     text-decoration: none;
-    transition: opacity 0.3s ease;
+    padding: var(--footer-menu-padding-y, 0.5rem) var(--footer-menu-padding-x, 0.75rem);
+    letter-spacing: var(--footer-menu-letter-spacing, 0);
+    border-radius: 4px;
+    transition: background-color 0.25s ease, color 0.25s ease, opacity 0.25s ease;
 }
 
 .footer-navigation a:hover {
-    opacity: 0.8;
+    color: var(--footer-menu-hover-text-color, #e9ecef);
+    background: var(--footer-menu-hover-bg, rgba(255,255,255,0.08));
+}
+
+.site-info {
+    border-top: 1px solid #555;
+}
+
+.footer-bottom {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 1rem;
+}
+
+/* Footer menu positioning via offsets (applied as margins for reliable layout adjustments) */
+.footer-navigation {
+    margin-top: var(--footer-menu-offset-top, 0);
+    margin-right: var(--footer-menu-offset-right, 0);
+    margin-bottom: var(--footer-menu-offset-bottom, 0);
+    margin-left: var(--footer-menu-offset-left, 0);
 }
 
 .footer-credits {
-    text-align: right;
-    font-size: 0.85rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--footer-credits-font-size, 0.85rem);
+    font-family: var(--footer-credits-font-family, inherit);
+    color: var(--footer-credits-color, #fff);
     opacity: 0.8;
 }
 
+/* Copyright alignment based on body class */
+body.footer-copyright-left .footer-credits { justify-content: flex-start; gap: 1rem 2rem; }
+body.footer-copyright-center .footer-credits { justify-content: center; text-align: center; gap: 1rem 2rem; }
+body.footer-copyright-right .footer-credits { justify-content: flex-end; gap: 1rem 2rem; text-align: right; }
+
 .footer-credits a {
-    color: #fff;
+    color: var(--footer-credits-color, #fff);
     text-decoration: none;
 }
 
@@ -599,20 +682,23 @@ select:focus {
         padding: 1rem;
     }
     
-    .footer-content {
+    .footer-widgets {
         grid-template-columns: 1fr;
-        text-align: center;
-        gap: 1rem;
     }
     
     .footer-credits {
+        justify-content: center;
+        text-align: center;
+    }
+
+    /* Force center on mobile regardless of chosen alignment */
+    body.footer-copyright-left .footer-credits,
+    body.footer-copyright-right .footer-credits {
+        justify-content: center;
         text-align: center;
     }
     
-    .footer-navigation ul {
-        justify-content: center;
-        flex-wrap: wrap;
-    }
+    .footer-navigation ul { justify-content: center; flex-wrap: wrap; }
     
     .menu-toggle {
         display: block;

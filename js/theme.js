@@ -14,6 +14,7 @@
         setupDarkLightToggle();
         setupMobileMenu();
         setupAccessibility();
+        setupMobileSearch();
     }
 
     /**
@@ -70,6 +71,65 @@
             
             if (lightIcon) lightIcon.style.display = 'block';
             if (darkIcon) darkIcon.style.display = 'none';
+        }
+    }
+
+    /**
+     * Mobile search interactions
+     */
+    function setupMobileSearch() {
+        const body = document.body;
+        const searchToggle = document.querySelector('.mobile-search-toggle');
+        const searchForm = document.getElementById('header-search-form');
+        const searchInput = searchForm ? searchForm.querySelector('input[type="search"]') : null;
+        const themeToggle = document.querySelector('.dark-light-toggle');
+
+        if (!searchToggle || !searchForm) return;
+
+        function openSearch() {
+            body.classList.add('search-open');
+            searchToggle.setAttribute('aria-expanded', 'true');
+            if (searchInput) {
+                setTimeout(() => searchInput.focus(), 0);
+            }
+        }
+
+        function closeSearch() {
+            body.classList.remove('search-open');
+            searchToggle.setAttribute('aria-expanded', 'false');
+        }
+
+        // Toggle search on icon click
+        searchToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (body.classList.contains('search-open')) {
+                closeSearch();
+            } else {
+                openSearch();
+            }
+        });
+
+        // Close when clicking outside search area
+        document.addEventListener('click', function(e) {
+            if (!body.classList.contains('search-open')) return;
+            if (searchForm.contains(e.target) || searchToggle.contains(e.target)) return;
+            closeSearch();
+        });
+
+        // Close when pressing ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && body.classList.contains('search-open')) {
+                closeSearch();
+            }
+        });
+
+        // Close search when theme toggle is activated
+        if (themeToggle) {
+            themeToggle.addEventListener('click', function() {
+                if (body.classList.contains('search-open')) {
+                    closeSearch();
+                }
+            });
         }
     }
 

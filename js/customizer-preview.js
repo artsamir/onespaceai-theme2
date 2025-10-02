@@ -26,6 +26,9 @@
         
         // Search result control settings
         setupSearchResultUpdates();
+
+        // Footer settings
+        setupFooterUpdates();
     }
 
     /**
@@ -94,6 +97,92 @@
                 const height = wp.customize('header_logo_height_value').get();
                 updateCSSProperty('--logo-height', parseInt(height) + to);
             });
+        });
+    }
+
+    /**
+     * Setup footer updates
+     */
+    function setupFooterUpdates() {
+        // Copyright text
+        wp.customize('footer_copyright_text', function(value) {
+            value.bind(function(to) {
+                const year = new Date().getFullYear();
+                const site = document.title.replace(/\s*[–|-].*$/, '');
+                const rendered = (to || '').replaceAll('{year}', year).replaceAll('{site}', site);
+                const el = document.querySelector('.footer-credits .copyright');
+                if (el) el.innerHTML = rendered || el.innerHTML;
+            });
+        });
+
+        // Font family
+        wp.customize('footer_credits_font_family', function(value) {
+            value.bind(function(to) {
+                updateCSSProperty('--footer-credits-font-family', to || 'inherit');
+            });
+        });
+
+        // Font size
+        wp.customize('footer_credits_font_size', function(value) {
+            value.bind(function(to) {
+                updateCSSProperty('--footer-credits-font-size', parseFloat(to) + 'rem');
+            });
+        });
+
+        // Text color
+        wp.customize('footer_credits_color', function(value) {
+            value.bind(function(to) {
+                updateCSSProperty('--footer-credits-color', to);
+            });
+        });
+
+        // Footer background color
+        wp.customize('footer_background_color', function(value) {
+            value.bind(function(to) {
+                updateCSSProperty('--footer-bg', to);
+            });
+        });
+
+        // Copyright position (toggle body class)
+        wp.customize('footer_copyright_position', function(value) {
+            value.bind(function(to) {
+                const body = document.body;
+                body.classList.remove('footer-copyright-left', 'footer-copyright-center', 'footer-copyright-right');
+                const cls = (to === 'center' ? 'footer-copyright-center' : (to === 'right' ? 'footer-copyright-right' : 'footer-copyright-left'));
+                body.classList.add(cls);
+            });
+        });
+
+        // Footer menu offsets (px)
+        ['footer_menu_offset_top','footer_menu_offset_right','footer_menu_offset_bottom','footer_menu_offset_left'].forEach(function(setting){
+            wp.customize(setting, function(value){
+                value.bind(function(to){
+                    const cssName = '--' + setting.replace(/_/g, '-');
+                    updateCSSProperty(cssName, parseInt(to) + 'px');
+                });
+            });
+        });
+
+        // Footer menu colors
+        wp.customize('footer_menu_text_color', function(value){
+            value.bind(function(to){ updateCSSProperty('--footer-menu-text-color', to); });
+        });
+        wp.customize('footer_menu_hover_text_color', function(value){
+            value.bind(function(to){ updateCSSProperty('--footer-menu-hover-text-color', to); });
+        });
+        wp.customize('footer_menu_hover_bg_color', function(value){
+            value.bind(function(to){ updateCSSProperty('--footer-menu-hover-bg', to); });
+        });
+
+        // Footer menu letter spacing/padding
+        wp.customize('footer_menu_letter_spacing', function(value){
+            value.bind(function(to){ updateCSSProperty('--footer-menu-letter-spacing', parseFloat(to) + 'em'); });
+        });
+        wp.customize('footer_menu_padding_x', function(value){
+            value.bind(function(to){ updateCSSProperty('--footer-menu-padding-x', parseFloat(to) + 'rem'); });
+        });
+        wp.customize('footer_menu_padding_y', function(value){
+            value.bind(function(to){ updateCSSProperty('--footer-menu-padding-y', parseFloat(to) + 'rem'); });
         });
     }
 

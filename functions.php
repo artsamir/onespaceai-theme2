@@ -170,6 +170,9 @@ function onespace_load_customizer() {
     
     // Load header customizer settings
     require_once ONESPACE_THEME_DIR . '/inc/customizer-header.php';
+
+    // Load footer customizer settings
+    require_once ONESPACE_THEME_DIR . '/inc/customizer-footer.php';
 }
 add_action('customize_register', 'onespace_load_customizer', 1);
 
@@ -191,6 +194,27 @@ function onespace_widgets_init() {
         'name'          => __('Footer', 'onespace-theme2'),
         'id'            => 'footer-1',
         'description'   => __('Add widgets here to appear in your footer.', 'onespace-theme2'),
+        'before_widget' => '<section id="%1$s" class="widget %2$s">',
+        'after_widget'  => '</section>',
+        'before_title'  => '<h3 class="widget-title">',
+        'after_title'   => '</h3>',
+    ));
+
+    // Additional footer widget areas for multi-column layout
+    register_sidebar(array(
+        'name'          => __('Footer 2', 'onespace-theme2'),
+        'id'            => 'footer-2',
+        'description'   => __('Second footer widget area.', 'onespace-theme2'),
+        'before_widget' => '<section id="%1$s" class="widget %2$s">',
+        'after_widget'  => '</section>',
+        'before_title'  => '<h3 class="widget-title">',
+        'after_title'   => '</h3>',
+    ));
+
+    register_sidebar(array(
+        'name'          => __('Footer 3', 'onespace-theme2'),
+        'id'            => 'footer-3',
+        'description'   => __('Third footer widget area.', 'onespace-theme2'),
         'before_widget' => '<section id="%1$s" class="widget %2$s">',
         'after_widget'  => '</section>',
         'before_title'  => '<h3 class="widget-title">',
@@ -362,6 +386,58 @@ function onespace_generate_css_vars() {
     $toggle_offset_y = get_theme_mod('header_toggle_offset_y', 0);
     $css_vars['--toggle-offset-x'] = floatval($toggle_offset_x) . 'rem';
     $css_vars['--toggle-offset-y'] = floatval($toggle_offset_y) . 'rem';
+
+    // Footer copyright styles
+    $footer_font_family = get_theme_mod('footer_credits_font_family', '');
+    $footer_font_size = get_theme_mod('footer_credits_font_size', 0.85);
+    $footer_color = get_theme_mod('footer_credits_color', '#ffffff');
+    if ($footer_font_family) {
+        $css_vars['--footer-credits-font-family'] = $footer_font_family;
+    }
+    $css_vars['--footer-credits-font-size'] = floatval($footer_font_size) . 'rem';
+    if ($footer_color) {
+        $css_vars['--footer-credits-color'] = $footer_color;
+    }
+
+    // Footer background
+    $footer_bg = get_theme_mod('footer_background_color', '#333333');
+    if ($footer_bg) {
+        $css_vars['--footer-bg'] = $footer_bg;
+    }
+
+    // Footer menu offsets (px)
+    $footer_offsets = array(
+        'footer_menu_offset_top' => '--footer-menu-offset-top',
+        'footer_menu_offset_right' => '--footer-menu-offset-right',
+        'footer_menu_offset_bottom' => '--footer-menu-offset-bottom',
+        'footer_menu_offset_left' => '--footer-menu-offset-left',
+    );
+    foreach ($footer_offsets as $mod => $var) {
+        $value = get_theme_mod($mod, 0);
+        $css_vars[$var] = intval($value) . 'px';
+    }
+
+    // Footer menu colors
+    $footer_menu_text = get_theme_mod('footer_menu_text_color', '#ffffff');
+    if ($footer_menu_text) {
+        $css_vars['--footer-menu-text-color'] = $footer_menu_text;
+    }
+    $footer_menu_hover_text = get_theme_mod('footer_menu_hover_text_color', '#e9ecef');
+    if ($footer_menu_hover_text) {
+        $css_vars['--footer-menu-hover-text-color'] = $footer_menu_hover_text;
+    }
+    $footer_menu_hover_bg = get_theme_mod('footer_menu_hover_bg_color', 'rgba(255,255,255,0.08)');
+    if ($footer_menu_hover_bg) {
+        $css_vars['--footer-menu-hover-bg'] = $footer_menu_hover_bg;
+    }
+
+    // Footer menu letter spacing (em) and padding (rem)
+    $footer_menu_letter_spacing = get_theme_mod('footer_menu_letter_spacing', 0);
+    $css_vars['--footer-menu-letter-spacing'] = floatval($footer_menu_letter_spacing) . 'em';
+    $footer_menu_padding_x = get_theme_mod('footer_menu_padding_x', 0.75);
+    $footer_menu_padding_y = get_theme_mod('footer_menu_padding_y', 0.5);
+    $css_vars['--footer-menu-padding-x'] = floatval($footer_menu_padding_x) . 'rem';
+    $css_vars['--footer-menu-padding-y'] = floatval($footer_menu_padding_y) . 'rem';
     
     return $css_vars;
 }
@@ -398,6 +474,10 @@ function onespace_body_classes($classes) {
     
     // Add dark mode class if needed
     $classes[] = 'theme-onespace';
+
+    // Footer copyright position
+    $copyright_pos = get_theme_mod('footer_copyright_position', 'left');
+    $classes[] = 'footer-copyright-' . (in_array($copyright_pos, array('left','center','right'), true) ? $copyright_pos : 'left');
     
     return $classes;
 }

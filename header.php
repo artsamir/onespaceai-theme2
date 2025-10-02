@@ -84,8 +84,8 @@
             </div>
         </nav><!-- #site-navigation -->
 
-        <!-- Header Utilities Section -->
-        <div class="header-utilities">
+    <!-- Header Utilities Section -->
+    <div class="header-utilities">
             
             <!-- Search Form -->
             <?php
@@ -111,7 +111,11 @@
                 }
             }
             ?>
-            <form role="search" method="get" class="search-form header-search" action="<?php echo esc_url($action_url); ?>">
+            <button class="mobile-search-toggle" type="button" aria-label="<?php esc_attr_e('Open search', 'onespace-theme2'); ?>" aria-expanded="false">
+                <span class="toggle-icon" aria-hidden="true">🔍</span>
+            </button>
+
+            <form role="search" method="get" class="search-form header-search" id="header-search-form" action="<?php echo esc_url($action_url); ?>">
                 <label>
                     <span class="screen-reader-text"><?php echo _x('Search for:', 'label', 'onespace-theme2'); ?></span>
                     <input type="search" 
@@ -143,7 +147,7 @@
             
             if ($show_toggle) :
             ?>
-                <button class="dark-light-toggle" 
+        <button class="dark-light-toggle" 
                         type="button" 
                         aria-label="<?php esc_attr_e('Toggle dark/light mode', 'onespace-theme2'); ?>"
                         title="<?php esc_attr_e('Toggle dark/light mode', 'onespace-theme2'); ?>">
