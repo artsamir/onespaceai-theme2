@@ -209,7 +209,11 @@
 
             <!-- Mobile Menu Toggle -->
             <button class="menu-toggle" type="button" aria-controls="primary-menu" aria-expanded="false" aria-label="<?php esc_attr_e('Toggle navigation', 'onespace-theme2'); ?>">
-                <span class="toggle-icon" aria-hidden="true">☰</span>
+                <span class="hamburger" aria-hidden="true">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </span>
             </button>
 
         </div><!-- .header-utilities -->
