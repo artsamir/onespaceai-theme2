@@ -104,14 +104,25 @@
      * Setup footer updates
      */
     function setupFooterUpdates() {
+        console.log('🔧 Setting up footer updates...');
+        
+        // Test if footer settings are available
+        console.log('Testing footer_menu_position:', wp.customize('footer_menu_position'));
+        console.log('Testing footer_menu_background_color:', wp.customize('footer_menu_background_color'));
         // Copyright text
         wp.customize('footer_copyright_text', function(value) {
             value.bind(function(to) {
                 const year = new Date().getFullYear();
                 const site = document.title.replace(/\s*[–|-].*$/, '');
-                const rendered = (to || '').replaceAll('{year}', year).replaceAll('{site}', site);
+                let rendered = (to || '').replaceAll('{year}', year).replaceAll('{site}', site);
                 const el = document.querySelector('.footer-credits .copyright');
-                if (el) el.innerHTML = rendered || el.innerHTML;
+                if (el) {
+                    // Allow clearing text in real-time; fallback placeholder when empty
+                    if (rendered.trim() === '') {
+                        rendered = '';
+                    }
+                    el.innerHTML = rendered;
+                }
             });
         });
 
@@ -153,6 +164,66 @@
             });
         });
 
+        // Footer menu position (toggle body class and trigger alignment)
+        wp.customize('footer_menu_position', function(value) {
+            value.bind(function(to) {
+                console.log('🔄 Footer menu position changed to:', to);
+                
+                const body = document.body;
+                body.classList.remove('footer-menu-left','footer-menu-center','footer-menu-right');
+                let cls = 'footer-menu-center';
+                if (to === 'left') cls = 'footer-menu-left';
+                else if (to === 'right') cls = 'footer-menu-right';
+                body.classList.add(cls);
+                
+                console.log('✅ Body class updated to:', cls);
+                
+                // Use the working manual function approach directly
+                function forceFooterAlignment(position, attempts) {
+                    attempts = attempts || 0;
+                    
+                    const menu = document.querySelector('#footer-menu');
+                    console.log('🎯 Menu element found:', !!menu);
+                    
+                    if (menu) {
+                        // Get current background color from CSS variable
+                        const computedStyle = getComputedStyle(document.documentElement);
+                        const backgroundColor = computedStyle.getPropertyValue('--footer-menu-background').trim() || 'transparent';
+                        
+                        // Apply direct styling like the working console function
+                        menu.style.display = 'flex';
+                        menu.style.flexWrap = 'wrap';
+                        menu.style.width = '100%';
+                        menu.style.listStyle = 'none';
+                        menu.style.margin = '0';
+                        menu.style.padding = '0';
+                        menu.style.gap = '1.5rem';
+                        menu.style.justifyContent = position === 'left' ? 'flex-start' : 
+                                                   position === 'right' ? 'flex-end' : 'center';
+                        menu.style.background = backgroundColor;
+                        
+                        console.log('✅ Direct styling applied:', position, backgroundColor);
+                        
+                        // Also try the original function if available
+                        if (typeof window.applyFooterMenuAlignment === 'function') {
+                            setTimeout(() => {
+                                window.applyFooterMenuAlignment();
+                                console.log('✅ Original alignment function called');
+                            }, 10);
+                        }
+                    } else if (attempts < 5) {
+                        // Retry if menu not found yet
+                        console.log('⚠️ Menu not found, retrying...', attempts + 1);
+                        setTimeout(() => forceFooterAlignment(position, attempts + 1), 100);
+                    } else {
+                        console.log('❌ Menu element not found after retries');
+                    }
+                }
+                
+                forceFooterAlignment(to);
+            });
+        });
+
         // Footer menu offsets (px)
         ['footer_menu_offset_top','footer_menu_offset_right','footer_menu_offset_bottom','footer_menu_offset_left'].forEach(function(setting){
             wp.customize(setting, function(value){
@@ -172,6 +243,30 @@
         });
         wp.customize('footer_menu_hover_bg_color', function(value){
             value.bind(function(to){ updateCSSProperty('--footer-menu-hover-bg', to); });
+        });
+        
+        // Footer menu background color
+        wp.customize('footer_menu_background_color', function(value){
+            value.bind(function(to){ 
+                console.log('🎨 Footer menu background changed to:', to);
+                
+                updateCSSProperty('--footer-menu-background', to);
+                
+                // Apply background immediately to menu element
+                const menu = document.querySelector('#footer-menu');
+                if (menu) {
+                    menu.style.background = to || 'transparent';
+                    console.log('✅ Background applied directly to menu:', to);
+                }
+                
+                // Also trigger alignment function to apply new background immediately
+                if (typeof window.applyFooterMenuAlignment === 'function') {
+                    setTimeout(() => {
+                        window.applyFooterMenuAlignment();
+                        console.log('✅ Alignment function called for background update');
+                    }, 50);
+                }
+            });
         });
 
         // Footer menu letter spacing/padding
@@ -522,7 +617,7 @@
      * Update CSS custom property
      */
     function updateCSSProperty(property, value) {
-        if (!value) return;
+        if (value === undefined || value === null) return; // allow empty string to clear
         
         const existingStyle = document.getElementById('onespace-preview-css');
         let style = existingStyle;
@@ -554,8 +649,12 @@
             });
         }
         
-        // Update the property
-        properties[property] = value;
+        if (value === '') {
+            // Remove property if explicitly cleared
+            delete properties[property];
+        } else {
+            properties[property] = value;
+        }
         
         // Rebuild CSS
         let newCSS = ':root { ';
@@ -637,8 +736,54 @@
         searchForm.setAttribute('action', actionUrl);
     }
 
+    /**
+     * Debug function to test Customizer settings availability
+     */
+    function debugCustomizerSettings() {
+        console.log('🔍 Debugging Customizer settings...');
+        
+        // Check if wp.customize exists
+        if (typeof wp === 'undefined' || typeof wp.customize === 'undefined') {
+            console.log('❌ wp.customize not available');
+            return;
+        }
+        
+        console.log('✅ wp.customize is available');
+        
+        // Test specific settings
+        const testSettings = [
+            'footer_copyright_position',    // This one works
+            'footer_menu_position',         // This one doesn't
+            'footer_menu_background_color'  // This one doesn't
+        ];
+        
+        testSettings.forEach(function(settingName) {
+            const setting = wp.customize(settingName);
+            if (setting) {
+                const value = setting.get();
+                console.log(`✅ Setting "${settingName}": ${value}`);
+                
+                // Test if we can bind to it
+                try {
+                    setting.bind(function(newValue) {
+                        console.log(`🔄 TEST: ${settingName} changed to: ${newValue}`);
+                    });
+                    console.log(`✅ Successfully bound to: ${settingName}`);
+                } catch (error) {
+                    console.log(`❌ Failed to bind to: ${settingName}`, error);
+                }
+            } else {
+                console.log(`❌ Setting "${settingName}" not found`);
+            }
+        });
+    }
+
     // Initialize when document is ready
     $(document).ready(function() {
+        // Debug first
+        setTimeout(debugCustomizerSettings, 1000);
+        
+        // Then initialize
         initPreviewUpdates();
     });
 

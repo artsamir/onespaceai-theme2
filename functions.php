@@ -104,6 +104,9 @@ function onespace_scripts() {
 
     // Enqueue theme JavaScript
     wp_enqueue_script('onespace-theme-js', ONESPACE_THEME_URI . '/js/theme.js', array('jquery'), ONESPACE_THEME_VERSION, true);
+    
+    // Enqueue footer alignment fix script
+    wp_enqueue_script('onespace-footer-alignment', ONESPACE_THEME_URI . '/js/footer-alignment.js', array('jquery'), ONESPACE_THEME_VERSION, true);
 
     // Enqueue comment reply script
     if (is_singular() && comments_open() && get_option('thread_comments')) {
@@ -431,6 +434,12 @@ function onespace_generate_css_vars() {
         $css_vars['--footer-menu-hover-bg'] = $footer_menu_hover_bg;
     }
 
+    // Footer menu background color
+    $footer_menu_bg = get_theme_mod('footer_menu_background_color', 'transparent');
+    if ($footer_menu_bg) {
+        $css_vars['--footer-menu-background'] = $footer_menu_bg;
+    }
+
     // Footer menu letter spacing (em) and padding (rem)
     $footer_menu_letter_spacing = get_theme_mod('footer_menu_letter_spacing', 0);
     $css_vars['--footer-menu-letter-spacing'] = floatval($footer_menu_letter_spacing) . 'em';
@@ -478,6 +487,13 @@ function onespace_body_classes($classes) {
     // Footer copyright position
     $copyright_pos = get_theme_mod('footer_copyright_position', 'left');
     $classes[] = 'footer-copyright-' . (in_array($copyright_pos, array('left','center','right'), true) ? $copyright_pos : 'left');
+
+    // Footer menu position
+    $menu_pos = get_theme_mod('footer_menu_position', 'center');
+    if (!in_array($menu_pos, array('left','center','right'), true)) {
+        $menu_pos = 'center';
+    }
+    $classes[] = 'footer-menu-' . $menu_pos;
     
     return $classes;
 }

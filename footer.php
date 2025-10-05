@@ -7,7 +7,7 @@
 
     <footer id="colophon" class="site-footer" role="contentinfo">
 
-        <!-- Upper Footer: brand/logo, menu, widgets -->
+        <!-- Upper Footer: brand/logo, widgets -->
         <div class="footer-top">
             <div class="footer-content">
 
@@ -30,21 +30,6 @@
                         </div>
                     <?php endif; ?>
                 </div>
-
-                <!-- Footer navigation menu -->
-                <?php if (has_nav_menu('footer')) : ?>
-                    <nav class="footer-navigation" role="navigation" aria-label="<?php esc_attr_e('Footer Navigation', 'onespace-theme2'); ?>">
-                        <?php
-                        wp_nav_menu(array(
-                            'theme_location' => 'footer',
-                            'menu_id'        => 'footer-menu',
-                            'container'      => false,
-                            'depth'          => 1,
-                        ));
-                        ?>
-                    </nav>
-                <?php endif; ?>
-
                 <!-- Footer widgets: up to three columns -->
                 <div class="footer-widgets">
                     <?php if (is_active_sidebar('footer-1')) : ?>
@@ -67,6 +52,22 @@
             </div><!-- .footer-content -->
         </div><!-- .footer-top -->
 
+        <?php if (has_nav_menu('footer')) : ?>
+        <div class="footer-middle">
+            <div class="footer-content">
+                <nav class="footer-navigation" role="navigation" aria-label="<?php esc_attr_e('Footer Navigation', 'onespace-theme2'); ?>">
+                    <?php
+                    wp_nav_menu(array(
+                        'theme_location' => 'footer',
+                        'menu_id'        => 'footer-menu',
+                        'container'      => false,
+                        'depth'          => 1,
+                    ));
+                    ?>
+                </nav>
+            </div>
+        </div>
+        <?php endif; ?>
         <!-- Lower Footer: copyright strip -->
         <div class="site-info">
             <div class="footer-bottom">

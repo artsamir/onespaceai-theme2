@@ -108,6 +108,37 @@ function onespace_footer_customizer($wp_customize) {
         ),
     ));
 
+    // Footer menu alignment
+    $wp_customize->add_setting('footer_menu_position', array(
+        'default'           => 'center',
+        'sanitize_callback' => function($value){ return onespace_sanitize_select($value, array('left','center','right'), 'center'); },
+        'transport'         => 'postMessage',
+    ));
+    $wp_customize->add_control('footer_menu_position', array(
+        'label'    => __('Footer Menu Position', 'onespace-theme2'),
+        'section'  => 'onespace_footer',
+        'type'     => 'select',
+        'priority' => 65,
+        'choices'  => array(
+            'left'   => __('Left', 'onespace-theme2'),
+            'center' => __('Center', 'onespace-theme2'),
+            'right'  => __('Right', 'onespace-theme2'),
+        ),
+    ));
+
+    // Footer menu background color (for debug/styling)
+    $wp_customize->add_setting('footer_menu_background_color', array(
+        'default'           => 'transparent',
+        'sanitize_callback' => 'onespace_sanitize_color_alpha',
+        'transport'         => 'postMessage',
+    ));
+    $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'footer_menu_background_color', array(
+        'label'    => __('Footer Menu Background Color', 'onespace-theme2'),
+        'section'  => 'onespace_footer',
+        'priority' => 67,
+        'description' => __('Background color for the footer menu container. Use transparent to remove background.', 'onespace-theme2'),
+    )));
+
     // Footer menu positioning (offsets in px)
     $offsets = array(
         'footer_menu_offset_top'    => __('Footer Menu Offset Top (px)', 'onespace-theme2'),

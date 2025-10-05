@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CSS Selector Test</title>
+    <style>
+        /* Test our exact CSS rules */
+        .site-footer .footer-middle .footer-navigation ul { 
+            justify-content: center !important; 
+            display: flex !important;
+            flex-wrap: wrap !important;
+            width: 100% !important;
+            list-style: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            gap: 1.5rem !important;
+            background: red !important; /* Debug background */
+        }
+        body.footer-menu-left .site-footer .footer-middle .footer-navigation ul { 
+            justify-content: flex-start !important; 
+            background: blue !important; /* Debug background */
+        }
+        body.footer-menu-center .site-footer .footer-middle .footer-navigation ul { 
+            justify-content: center !important; 
+            background: green !important; /* Debug background */
+        }
+        body.footer-menu-right .site-footer .footer-middle .footer-navigation ul { 
+            justify-content: flex-end !important; 
+            background: orange !important; /* Debug background */
+        }
+        
+        /* Base styles */
+        body { margin: 20px; font-family: Arial, sans-serif; }
+        .site-footer { background: #333; color: white; padding: 20px; }
+        .footer-navigation a { color: white; text-decoration: none; padding: 10px; }
+    </style>
+</head>
+<body class="footer-menu-left">
+    <h2>CSS Selector Test</h2>
+    
+    <h3>Test 1: Our Expected Structure</h3>
+    <div class="site-footer">
+        <div class="footer-middle">
+            <div class="footer-content">
+                <nav class="footer-navigation">
+                    <ul>
+                        <li><a href="#">Link 1</a></li>
+                        <li><a href="#">Link 2</a></li>
+                        <li><a href="#">Link 3</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    
+    <h3>Test 2: WordPress Generated Structure (possible)</h3>
+    <div class="site-footer">
+        <div class="footer-middle">
+            <div class="footer-content">
+                <nav class="footer-navigation">
+                    <ul id="footer-menu" class="menu">
+                        <li><a href="#">WP Link 1</a></li>
+                        <li><a href="#">WP Link 2</a></li>
+                        <li><a href="#">WP Link 3</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    
+    <h3>Test 3: Alternate Structure</h3>
+    <footer class="site-footer">
+        <div class="footer-middle">
+            <nav class="footer-navigation">
+                <ul>
+                    <li><a href="#">Alt Link 1</a></li>
+                    <li><a href="#">Alt Link 2</a></li>
+                    <li><a href="#">Alt Link 3</a></li>
+                </ul>
+            </nav>
+        </div>
+    </footer>
+    
+    <script>
+        // Test different body classes
+        let classes = ['footer-menu-left', 'footer-menu-center', 'footer-menu-right'];
+        let current = 0;
+        
+        setInterval(() => {
+            document.body.className = classes[current];
+            console.log('Applied class:', classes[current]);
+            current = (current + 1) % classes.length;
+        }, 2000);
+    </script>
+</body>
+</html>

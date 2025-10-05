@@ -490,6 +490,11 @@ select:focus {
     padding: 0 1rem;
 }
 
+/* Middle Footer (menu between top and bottom) */
+.footer-middle {
+    padding: 1rem 0;
+}
+
 .footer-widgets {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -513,8 +518,14 @@ select:focus {
     margin: 0;
     padding: 0;
     display: flex;
+    flex-wrap: wrap;
+    width: 100%;
     gap: 1.5rem;
+    /* justify-content handled by high-specificity rules below */
 }
+
+/* Footer navigation container full width */
+.footer-middle .footer-navigation { width: 100%; }
 
 .footer-navigation a {
     color: var(--footer-menu-text-color, #fff);
@@ -541,11 +552,119 @@ select:focus {
 }
 
 /* Footer menu positioning via offsets (applied as margins for reliable layout adjustments) */
+/* Footer menu positioning via offsets (margins) and full width */
 .footer-navigation {
     margin-top: var(--footer-menu-offset-top, 0);
     margin-right: var(--footer-menu-offset-right, 0);
     margin-bottom: var(--footer-menu-offset-bottom, 0);
     margin-left: var(--footer-menu-offset-left, 0);
+    width: 100%;
+}
+
+/* Footer menu alignment with high specificity and default center */
+/* Target multiple possible WordPress menu structures */
+.site-footer .footer-middle .footer-navigation ul,
+.site-footer .footer-middle .footer-navigation ul.menu,
+.site-footer .footer-middle .footer-navigation #footer-menu,
+.site-footer .footer-middle nav ul,
+.site-footer .footer-middle nav ul.menu,
+.site-footer .footer-middle nav #footer-menu { 
+    justify-content: center !important; 
+    display: flex !important;
+    flex-wrap: wrap !important;
+    width: 100% !important;
+    list-style: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 1.5rem !important;
+}
+
+/* Body class overrides with multiple selectors */
+body.footer-menu-left .site-footer .footer-middle .footer-navigation ul,
+body.footer-menu-left .site-footer .footer-middle .footer-navigation ul.menu,
+body.footer-menu-left .site-footer .footer-middle .footer-navigation #footer-menu,
+body.footer-menu-left .site-footer .footer-middle nav ul,
+body.footer-menu-left .site-footer .footer-middle nav ul.menu,
+body.footer-menu-left .site-footer .footer-middle nav #footer-menu { 
+    justify-content: flex-start !important; 
+}
+
+body.footer-menu-center .site-footer .footer-middle .footer-navigation ul,
+body.footer-menu-center .site-footer .footer-middle .footer-navigation ul.menu,
+body.footer-menu-center .site-footer .footer-middle .footer-navigation #footer-menu,
+body.footer-menu-center .site-footer .footer-middle nav ul,
+body.footer-menu-center .site-footer .footer-middle nav ul.menu,
+body.footer-menu-center .site-footer .footer-middle nav #footer-menu { 
+    justify-content: center !important; 
+}
+
+body.footer-menu-right .site-footer .footer-middle .footer-navigation ul,
+body.footer-menu-right .site-footer .footer-middle .footer-navigation ul.menu,
+body.footer-menu-right .site-footer .footer-middle .footer-navigation #footer-menu,
+body.footer-menu-right .site-footer .footer-middle nav ul,
+body.footer-menu-right .site-footer .footer-middle nav ul.menu,
+body.footer-menu-right .site-footer .footer-middle nav #footer-menu { 
+    justify-content: flex-end !important; 
+}
+
+/* Universal catch-all rules - very high specificity */
+body.footer-menu-left .footer-middle ul { justify-content: flex-start !important; }
+body.footer-menu-center .footer-middle ul { justify-content: center !important; }
+body.footer-menu-right .footer-middle ul { justify-content: flex-end !important; }
+
+/* Target specific WordPress menu ID with maximum specificity */
+body.footer-menu-left #footer-menu { justify-content: flex-start !important; }
+body.footer-menu-center #footer-menu { justify-content: center !important; }
+body.footer-menu-right #footer-menu { justify-content: flex-end !important; }
+
+/* Nuclear approach - maximum specificity targeting exact WordPress structure */
+html body.footer-menu-left ul#footer-menu.menu { 
+    justify-content: flex-start !important; 
+    background: var(--footer-menu-background, transparent) !important;
+}
+html body.footer-menu-center ul#footer-menu.menu { 
+    justify-content: center !important; 
+    background: var(--footer-menu-background, transparent) !important;
+}
+html body.footer-menu-right ul#footer-menu.menu { 
+    justify-content: flex-end !important; 
+    background: var(--footer-menu-background, transparent) !important;
+}
+
+/* Even more specific - target any UL in footer with the exact structure */
+html body.footer-menu-left .site-footer .footer-middle .footer-content .footer-navigation ul#footer-menu.menu,
+html body.footer-menu-left .site-footer .footer-middle .footer-content nav ul#footer-menu.menu,
+html body.footer-menu-left .site-footer div.footer-middle div.footer-content nav.footer-navigation ul#footer-menu.menu {
+    justify-content: flex-start !important;
+    background: var(--footer-menu-background, transparent) !important;
+}
+
+html body.footer-menu-center .site-footer .footer-middle .footer-content .footer-navigation ul#footer-menu.menu,
+html body.footer-menu-center .site-footer .footer-middle .footer-content nav ul#footer-menu.menu,
+html body.footer-menu-center .site-footer div.footer-middle div.footer-content nav.footer-navigation ul#footer-menu.menu {
+    justify-content: center !important;
+    background: var(--footer-menu-background, transparent) !important;
+}
+
+html body.footer-menu-right .site-footer .footer-middle .footer-content .footer-navigation ul#footer-menu.menu,
+html body.footer-menu-right .site-footer .footer-middle .footer-content nav ul#footer-menu.menu,
+html body.footer-menu-right .site-footer div.footer-middle div.footer-content nav.footer-navigation ul#footer-menu.menu {
+    justify-content: flex-end !important;
+    background: var(--footer-menu-background, transparent) !important;
+}
+
+/* Ensure all footer ULs and specifically the WordPress menu are flex containers */
+.footer-middle ul,
+#footer-menu,
+ul#footer-menu.menu {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    width: 100% !important;
+    list-style: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 1.5rem !important;
+    justify-content: center !important; /* Default center */
 }
 
 .footer-credits {
@@ -698,7 +817,44 @@ body.footer-copyright-right .footer-credits { justify-content: flex-end; gap: 1r
         text-align: center;
     }
     
-    .footer-navigation ul { justify-content: center; flex-wrap: wrap; }
+    /* Mobile footer navigation - comprehensive selectors */
+    .site-footer .footer-middle .footer-navigation ul,
+    .site-footer .footer-middle .footer-navigation ul.menu,
+    .site-footer .footer-middle .footer-navigation #footer-menu,
+    .site-footer .footer-middle nav ul,
+    .site-footer .footer-middle nav ul.menu,
+    .site-footer .footer-middle nav #footer-menu { 
+        flex-wrap: wrap !important; 
+        justify-content: center !important; /* Default center on mobile */
+    }
+    
+    /* Mobile body class overrides */
+    body.footer-menu-left .site-footer .footer-middle .footer-navigation ul,
+    body.footer-menu-left .site-footer .footer-middle .footer-navigation ul.menu,
+    body.footer-menu-left .site-footer .footer-middle .footer-navigation #footer-menu,
+    body.footer-menu-left .site-footer .footer-middle nav ul,
+    body.footer-menu-left .site-footer .footer-middle nav ul.menu,
+    body.footer-menu-left .site-footer .footer-middle nav #footer-menu { 
+        justify-content: flex-start !important; 
+    }
+    
+    body.footer-menu-center .site-footer .footer-middle .footer-navigation ul,
+    body.footer-menu-center .site-footer .footer-middle .footer-navigation ul.menu,
+    body.footer-menu-center .site-footer .footer-middle .footer-navigation #footer-menu,
+    body.footer-menu-center .site-footer .footer-middle nav ul,
+    body.footer-menu-center .site-footer .footer-middle nav ul.menu,
+    body.footer-menu-center .site-footer .footer-middle nav #footer-menu { 
+        justify-content: center !important; 
+    }
+    
+    body.footer-menu-right .site-footer .footer-middle .footer-navigation ul,
+    body.footer-menu-right .site-footer .footer-middle .footer-navigation ul.menu,
+    body.footer-menu-right .site-footer .footer-middle .footer-navigation #footer-menu,
+    body.footer-menu-right .site-footer .footer-middle nav ul,
+    body.footer-menu-right .site-footer .footer-middle nav ul.menu,
+    body.footer-menu-right .site-footer .footer-middle nav #footer-menu { 
+        justify-content: flex-end !important; 
+    }
     
     .menu-toggle {
         display: block;
