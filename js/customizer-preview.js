@@ -29,6 +29,9 @@
 
         // Footer settings
         setupFooterUpdates();
+        
+        // Mobile icon styling
+        setupMobileIconUpdates();
     }
 
     /**
@@ -47,6 +50,52 @@
         wp.customize('header_tagline_position', function(value) {
             value.bind(function(to) {
                 updateBodyClass('tagline-', to);
+            });
+        });
+        
+        // Mobile logo
+        wp.customize('header_mobile_logo', function(value) {
+            value.bind(function(to) {
+                updateMobileLogo(to);
+            });
+        });
+        
+        // Mobile logo dimensions
+        wp.customize('header_mobile_logo_width_value', function(value) {
+            value.bind(function(to) {
+                updateMobileLogoDimensions();
+            });
+        });
+        
+        wp.customize('header_mobile_logo_width_unit', function(value) {
+            value.bind(function(to) {
+                updateMobileLogoDimensions();
+            });
+        });
+        
+        wp.customize('header_mobile_logo_height_value', function(value) {
+            value.bind(function(to) {
+                updateMobileLogoDimensions();
+            });
+        });
+        
+        wp.customize('header_mobile_logo_height_unit', function(value) {
+            value.bind(function(to) {
+                updateMobileLogoDimensions();
+            });
+        });
+        
+        // Mobile logo visibility
+        wp.customize('header_mobile_show_logo', function(value) {
+            value.bind(function(to) {
+                updateMobileLogoVisibility(to);
+            });
+        });
+        
+        // Mobile tagline visibility
+        wp.customize('header_mobile_show_tagline', function(value) {
+            value.bind(function(to) {
+                updateMobileTaglineVisibility(to);
             });
         });
 
@@ -775,6 +824,243 @@
             } else {
                 console.log(`❌ Setting "${settingName}" not found`);
             }
+        });
+    }
+    
+    /**
+     * Update mobile logo
+     */
+    function updateMobileLogo(attachmentId) {
+        const $mobileLogo = $('.mobile-logo');
+        const $siteLogo = $('.site-logo');
+        
+        if (attachmentId) {
+            // Add class to show mobile logo is set
+            $siteLogo.addClass('has-mobile-logo');
+            
+            // If mobile logo container doesn't exist, create it
+            if (!$mobileLogo.length) {
+                const mobileLogoHtml = '<div class="mobile-logo"><a href="' + window.location.origin + '" class="mobile-custom-logo-link" rel="home"><img class="mobile-custom-logo" src="" alt=""></a></div>';
+                $('.desktop-logo').after(mobileLogoHtml);
+            }
+            
+            // Update the mobile logo image
+            wp.media.attachment(attachmentId).fetch().then(function() {
+                const attachment = wp.media.attachment(attachmentId);
+                const imageUrl = attachment.get('url');
+                const imageAlt = attachment.get('alt') || '';
+                
+                $('.mobile-custom-logo').attr('src', imageUrl).attr('alt', imageAlt);
+                
+                // Apply dimensions after image is set
+                updateMobileLogoDimensions();
+            });
+        } else {
+            // Remove mobile logo and class
+            $siteLogo.removeClass('has-mobile-logo');
+            $mobileLogo.remove();
+        }
+    }
+    
+    /**
+     * Update mobile logo dimensions
+     */
+    function updateMobileLogoDimensions() {
+        const widthValue = wp.customize('header_mobile_logo_width_value')() || 150;
+        const widthUnit = wp.customize('header_mobile_logo_width_unit')() || 'px';
+        const heightValue = wp.customize('header_mobile_logo_height_value')() || 60;
+        const heightUnit = wp.customize('header_mobile_logo_height_unit')() || 'px';
+        
+        const width = widthValue + widthUnit;
+        const height = heightValue + heightUnit;
+        
+        // Update CSS custom properties
+        updateCSSProperty('--mobile-logo-width', width);
+        updateCSSProperty('--mobile-logo-height', height);
+        
+        // Also directly update the mobile logo if it exists
+        $('.mobile-logo img').css({
+            'width': width,
+            'height': height,
+            'object-fit': 'contain'
+        });
+    }
+    
+    /**
+     * Update mobile logo visibility
+     */
+    function updateMobileLogoVisibility(show) {
+        const $siteLogo = $('.site-logo');
+        if (show) {
+            $siteLogo.removeClass('hide-mobile-logo');
+        } else {
+            $siteLogo.addClass('hide-mobile-logo');
+        }
+    }
+    
+    /**
+     * Update mobile tagline visibility
+     */
+    function updateMobileTaglineVisibility(show) {
+        const $siteLogo = $('.site-logo');
+        const $siteTaglines = $('.site-tagline, .mobile-tagline');
+        
+        if (show) {
+            $siteLogo.removeClass('hide-mobile-tagline');
+            // Also directly show taglines to ensure immediate visibility
+            $siteTaglines.removeClass('mobile-hidden');
+        } else {
+            $siteLogo.addClass('hide-mobile-tagline');
+            // Also directly hide taglines for immediate effect
+            $siteTaglines.addClass('mobile-hidden');
+        }
+    }
+
+    /**
+     * Setup mobile icon styling updates
+     */
+    function setupMobileIconUpdates() {
+        
+        // Mobile icon styling controls
+        function updateMobileIconStyles() {
+            var darkLightSize = wp.customize('mobile_dark_light_icon_size')() || 16;
+            var darkLightPadding = wp.customize('mobile_dark_light_padding')() || 8;
+            var darkLightMargin = wp.customize('mobile_dark_light_margin')() || 4;
+            var searchSize = wp.customize('mobile_search_icon_size')() || 16;
+            var searchPadding = wp.customize('mobile_search_padding')() || 8;
+            var searchMargin = wp.customize('mobile_search_margin')() || 4;
+            var menuSize = wp.customize('mobile_menu_icon_size')() || 18;
+            var menuPadding = wp.customize('mobile_menu_padding')() || 8;
+            var menuMargin = wp.customize('mobile_menu_margin')() || 4;
+            
+            var style = '<style id="mobile-icon-preview-styles">';
+            style += '.dark-light-toggle .toggle-icon { font-size: ' + darkLightSize + 'px !important; padding: ' + darkLightPadding + 'px !important; margin: ' + darkLightMargin + 'px !important; }';
+            style += '.mobile-search-toggle .toggle-icon { font-size: ' + searchSize + 'px !important; padding: ' + searchPadding + 'px !important; margin: ' + searchMargin + 'px !important; }';
+            style += '.menu-toggle .toggle-icon { font-size: ' + menuSize + 'px !important; padding: ' + menuPadding + 'px !important; margin: ' + menuMargin + 'px !important; }';
+            style += '</style>';
+            
+            $('#mobile-icon-preview-styles').remove();
+            $('head').append(style);
+        }
+        
+        // Dark/Light toggle styling
+        wp.customize('mobile_dark_light_icon_size', function(value) {
+            value.bind(updateMobileIconStyles);
+        });
+        wp.customize('mobile_dark_light_padding', function(value) {
+            value.bind(updateMobileIconStyles);
+        });
+        wp.customize('mobile_dark_light_margin', function(value) {
+            value.bind(updateMobileIconStyles);
+        });
+        
+        // Search toggle styling
+        wp.customize('mobile_search_icon_size', function(value) {
+            value.bind(updateMobileIconStyles);
+        });
+        wp.customize('mobile_search_padding', function(value) {
+            value.bind(updateMobileIconStyles);
+        });
+        wp.customize('mobile_search_margin', function(value) {
+            value.bind(updateMobileIconStyles);
+        });
+        
+        // Menu toggle styling
+        wp.customize('mobile_menu_icon_size', function(value) {
+            value.bind(updateMobileIconStyles);
+        });
+        wp.customize('mobile_menu_padding', function(value) {
+            value.bind(updateMobileIconStyles);
+        });
+        wp.customize('mobile_menu_margin', function(value) {
+            value.bind(updateMobileIconStyles);
+        });
+        
+        // Mobile header spacing controls
+        function updateMobileHeaderSpacing() {
+            var paddingTop = wp.customize('mobile_header_padding_top')() || 8;
+            var paddingBottom = wp.customize('mobile_header_padding_bottom')() || 8;
+            var paddingLeft = wp.customize('mobile_header_padding_left')() || 16;
+            var paddingRight = wp.customize('mobile_header_padding_right')() || 16;
+            var marginTop = wp.customize('mobile_header_margin_top')() || 0;
+            var marginBottom = wp.customize('mobile_header_margin_bottom')() || 0;
+            
+            var style = '<style id="mobile-header-spacing-preview">';
+            style += '@media (max-width: 768px) {';
+            style += '.site-header { ';
+            style += 'padding: ' + paddingTop + 'px ' + paddingRight + 'px ' + paddingBottom + 'px ' + paddingLeft + 'px !important; ';
+            style += 'margin: ' + marginTop + 'px 0 ' + marginBottom + 'px 0 !important; ';
+            style += '}';
+            style += '}';
+            style += '</style>';
+            
+            $('#mobile-header-spacing-preview').remove();
+            $('head').append(style);
+        }
+        
+        // Mobile header padding controls
+        wp.customize('mobile_header_padding_top', function(value) {
+            value.bind(updateMobileHeaderSpacing);
+        });
+        wp.customize('mobile_header_padding_bottom', function(value) {
+            value.bind(updateMobileHeaderSpacing);
+        });
+        wp.customize('mobile_header_padding_left', function(value) {
+            value.bind(updateMobileHeaderSpacing);
+        });
+        wp.customize('mobile_header_padding_right', function(value) {
+            value.bind(updateMobileHeaderSpacing);
+        });
+        
+        // Mobile header margin controls
+        wp.customize('mobile_header_margin_top', function(value) {
+            value.bind(updateMobileHeaderSpacing);
+        });
+        wp.customize('mobile_header_margin_bottom', function(value) {
+            value.bind(updateMobileHeaderSpacing);
+        });
+        
+        // Mobile logo controls (moved from Site Identity)
+        wp.customize('mobile_logo', function(value) {
+            value.bind(function(to) {
+                updateMobileLogo();
+            });
+        });
+        
+        wp.customize('mobile_logo_width_value', function(value) {
+            value.bind(function(to) {
+                updateMobileLogoDimensions();
+            });
+        });
+        
+        wp.customize('mobile_logo_width_unit', function(value) {
+            value.bind(function(to) {
+                updateMobileLogoDimensions();
+            });
+        });
+        
+        wp.customize('mobile_logo_height_value', function(value) {
+            value.bind(function(to) {
+                updateMobileLogoDimensions();
+            });
+        });
+        
+        wp.customize('mobile_logo_height_unit', function(value) {
+            value.bind(function(to) {
+                updateMobileLogoDimensions();
+            });
+        });
+        
+        wp.customize('show_mobile_logo', function(value) {
+            value.bind(function(to) {
+                updateMobileLogoVisibility(to);
+            });
+        });
+        
+        wp.customize('show_mobile_tagline', function(value) {
+            value.bind(function(to) {
+                updateMobileTaglineVisibility(to);
+            });
         });
     }
 

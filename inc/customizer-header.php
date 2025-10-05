@@ -41,8 +41,14 @@ function onespace_header_customizer($wp_customize) {
     ));
 
     $wp_customize->add_section('onespace_header_toggle', array(
-        'title'    => __('Header Toggle Settings (Mobile View)', 'onespace-theme2'),
+        'title'    => __('Header Toggle Settings', 'onespace-theme2'),
         'priority' => 34,
+    ));
+    
+    // Add Header Settings (Mobile View) section
+    $wp_customize->add_section('onespace_header_mobile', array(
+        'title'    => __('Header Settings (Mobile View)', 'onespace-theme2'),
+        'priority' => 35,
     ));
     
     // Register all header settings and controls
@@ -51,6 +57,7 @@ function onespace_header_customizer($wp_customize) {
     onespace_register_menu_settings($wp_customize);
     onespace_register_search_settings($wp_customize);
     onespace_register_dark_light_settings($wp_customize);
+    onespace_register_mobile_settings($wp_customize);
     onespace_register_search_result_settings($wp_customize);
 }
 add_action('customize_register', 'onespace_header_customizer');
@@ -289,6 +296,133 @@ function onespace_register_site_settings($wp_customize) {
             'vh'  => 'vh',
             'vw'  => 'vw',
         ),
+    ));
+    
+    // Mobile Logo
+    $wp_customize->add_setting('header_mobile_logo', array(
+        'default'           => '',
+        'sanitize_callback' => 'absint',
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control(new WP_Customize_Media_Control(
+        $wp_customize,
+        'header_mobile_logo',
+        array(
+            'label'       => __('Mobile Logo', 'onespace-theme2'),
+            'section'     => 'title_tagline',
+            'mime_type'   => 'image',
+            'priority'    => 57,
+            'description' => __('Upload a separate logo for mobile devices. If not set, the main logo will be used.', 'onespace-theme2'),
+        )
+    ));
+    
+    // Mobile Logo Width Value
+    $wp_customize->add_setting('header_mobile_logo_width_value', array(
+        'default'           => 150,
+        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 1, 800); },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('header_mobile_logo_width_value', array(
+        'label'       => __('Mobile Logo Width Value', 'onespace-theme2'),
+        'section'     => 'title_tagline',
+        'type'        => 'number',
+        'priority'    => 58,
+        'input_attrs' => array(
+            'min' => 1,
+            'max' => 800,
+        ),
+    ));
+    
+    // Mobile Logo Width Unit
+    $wp_customize->add_setting('header_mobile_logo_width_unit', array(
+        'default'           => 'px',
+        'sanitize_callback' => 'onespace_sanitize_dimension_unit',
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('header_mobile_logo_width_unit', array(
+        'label'    => __('Mobile Logo Width Unit', 'onespace-theme2'),
+        'section'  => 'title_tagline',
+        'type'     => 'select',
+        'priority' => 59,
+        'choices'  => array(
+            'px'  => 'px',
+            'em'  => 'em',
+            'rem' => 'rem',
+            '%'   => '%',
+            'vh'  => 'vh',
+            'vw'  => 'vw',
+        ),
+    ));
+    
+    // Mobile Logo Height Value
+    $wp_customize->add_setting('header_mobile_logo_height_value', array(
+        'default'           => 60,
+        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 1, 400); },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('header_mobile_logo_height_value', array(
+        'label'       => __('Mobile Logo Height Value', 'onespace-theme2'),
+        'section'     => 'title_tagline',
+        'type'        => 'number',
+        'priority'    => 60,
+        'input_attrs' => array(
+            'min' => 1,
+            'max' => 400,
+        ),
+    ));
+    
+    // Mobile Logo Height Unit
+    $wp_customize->add_setting('header_mobile_logo_height_unit', array(
+        'default'           => 'px',
+        'sanitize_callback' => 'onespace_sanitize_dimension_unit',
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('header_mobile_logo_height_unit', array(
+        'label'    => __('Mobile Logo Height Unit', 'onespace-theme2'),
+        'section'  => 'title_tagline',
+        'type'     => 'select',
+        'priority' => 61,
+        'choices'  => array(
+            'px'  => 'px',
+            'em'  => 'em',
+            'rem' => 'rem',
+            '%'   => '%',
+            'vh'  => 'vh',
+            'vw'  => 'vw',
+        ),
+    ));
+    
+    // Mobile Logo Visibility
+    $wp_customize->add_setting('header_mobile_show_logo', array(
+        'default'           => true,
+        'sanitize_callback' => function($value) { return (bool) $value; },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('header_mobile_show_logo', array(
+        'label'    => __('Show Logo on Mobile', 'onespace-theme2'),
+        'section'  => 'title_tagline',
+        'type'     => 'checkbox',
+        'priority' => 62,
+    ));
+    
+    // Mobile Tagline Visibility
+    $wp_customize->add_setting('header_mobile_show_tagline', array(
+        'default'           => true,
+        'sanitize_callback' => function($value) { return (bool) $value; },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('header_mobile_show_tagline', array(
+        'label'    => __('Show Tagline on Mobile', 'onespace-theme2'),
+        'section'  => 'title_tagline',
+        'type'     => 'checkbox',
+        'priority' => 63,
     ));
 }
 
@@ -756,6 +890,215 @@ function onespace_register_search_settings($wp_customize) {
  */
 function onespace_register_dark_light_settings($wp_customize) {
     
+    // Mobile icon controls moved to Header Toggle Settings section
+    
+    // Mobile Logo Settings
+    $wp_customize->add_setting('mobile_logo', array(
+        'default'           => '',
+        'sanitize_callback' => 'absint',
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control(new WP_Customize_Media_Control($wp_customize, 'mobile_logo', array(
+        'label'       => __('Mobile Logo', 'onespace-theme2'),
+        'description' => __('Upload a logo specifically for mobile devices. If not set, desktop logo will be used.', 'onespace-theme2'),
+        'section'     => 'onespace_header_mobile',
+        'mime_type'   => 'image',
+        'priority'    => 1,
+    )));
+    
+    // Mobile Logo Width Value
+    $wp_customize->add_setting('mobile_logo_width_value', array(
+        'default'           => 120,
+        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 20, 500); },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('mobile_logo_width_value', array(
+        'label'       => __('Mobile Logo Width Value', 'onespace-theme2'),
+        'section'     => 'onespace_header_mobile',
+        'type'        => 'number',
+        'priority'    => 2,
+        'input_attrs' => array('min' => 20, 'max' => 500, 'step' => 1),
+    ));
+    
+    // Mobile Logo Width Unit
+    $wp_customize->add_setting('mobile_logo_width_unit', array(
+        'default'           => 'px',
+        'sanitize_callback' => function($value) {
+            $allowed = array('px', '%', 'em', 'rem', 'vw');
+            return in_array($value, $allowed) ? $value : 'px';
+        },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('mobile_logo_width_unit', array(
+        'label'   => __('Mobile Logo Width Unit', 'onespace-theme2'),
+        'section' => 'onespace_header_mobile',
+        'type'    => 'select',
+        'priority' => 3,
+        'choices' => array(
+            'px'  => __('Pixels (px)', 'onespace-theme2'),
+            '%'   => __('Percentage (%)', 'onespace-theme2'),
+            'em'  => __('Em (em)', 'onespace-theme2'),
+            'rem' => __('Rem (rem)', 'onespace-theme2'),
+            'vw'  => __('Viewport Width (vw)', 'onespace-theme2'),
+        ),
+    ));
+    
+    // Mobile Logo Height Value
+    $wp_customize->add_setting('mobile_logo_height_value', array(
+        'default'           => 40,
+        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 20, 200); },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('mobile_logo_height_value', array(
+        'label'       => __('Mobile Logo Height Value', 'onespace-theme2'),
+        'section'     => 'onespace_header_mobile',
+        'type'        => 'number',
+        'priority'    => 4,
+        'input_attrs' => array('min' => 20, 'max' => 200, 'step' => 1),
+    ));
+    
+    // Mobile Logo Height Unit
+    $wp_customize->add_setting('mobile_logo_height_unit', array(
+        'default'           => 'px',
+        'sanitize_callback' => function($value) {
+            $allowed = array('px', '%', 'em', 'rem', 'vh', 'auto');
+            return in_array($value, $allowed) ? $value : 'px';
+        },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('mobile_logo_height_unit', array(
+        'label'   => __('Mobile Logo Height Unit', 'onespace-theme2'),
+        'section' => 'onespace_header_mobile',
+        'type'    => 'select',
+        'priority' => 5,
+        'choices' => array(
+            'px'   => __('Pixels (px)', 'onespace-theme2'),
+            '%'    => __('Percentage (%)', 'onespace-theme2'),
+            'em'   => __('Em (em)', 'onespace-theme2'),
+            'rem'  => __('Rem (rem)', 'onespace-theme2'),
+            'vh'   => __('Viewport Height (vh)', 'onespace-theme2'),
+            'auto' => __('Auto', 'onespace-theme2'),
+        ),
+    ));
+    
+    // Show Logo on Mobile
+    $wp_customize->add_setting('show_mobile_logo', array(
+        'default'           => true,
+        'sanitize_callback' => function($value) { return (bool) $value; },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('show_mobile_logo', array(
+        'label'   => __('Show Logo on Mobile', 'onespace-theme2'),
+        'section' => 'onespace_header_mobile',
+        'type'    => 'checkbox',
+        'priority' => 6,
+    ));
+    
+    // Show Tagline on Mobile
+    $wp_customize->add_setting('show_mobile_tagline', array(
+        'default'           => true,
+        'sanitize_callback' => function($value) { return (bool) $value; },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('show_mobile_tagline', array(
+        'label'   => __('Show Tagline on Mobile', 'onespace-theme2'),
+        'section' => 'onespace_header_mobile',
+        'type'    => 'checkbox',
+        'priority' => 7,
+    ));
+    
+    // Mobile Header Spacing Controls
+    $wp_customize->add_setting('mobile_header_padding_top', array(
+        'default'           => 8,
+        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 0, 50); },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('mobile_header_padding_top', array(
+        'label'       => __('Mobile Header Padding Top (px)', 'onespace-theme2'),
+        'section'     => 'onespace_header_mobile',
+        'type'        => 'number',
+        'priority'    => 8,
+        'input_attrs' => array('min' => 0, 'max' => 50, 'step' => 1),
+    ));
+    
+    $wp_customize->add_setting('mobile_header_padding_bottom', array(
+        'default'           => 8,
+        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 0, 50); },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('mobile_header_padding_bottom', array(
+        'label'       => __('Mobile Header Padding Bottom (px)', 'onespace-theme2'),
+        'section'     => 'onespace_header_mobile',
+        'type'        => 'number',
+        'priority'    => 9,
+        'input_attrs' => array('min' => 0, 'max' => 50, 'step' => 1),
+    ));
+    
+    $wp_customize->add_setting('mobile_header_padding_left', array(
+        'default'           => 16,
+        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 0, 50); },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('mobile_header_padding_left', array(
+        'label'       => __('Mobile Header Padding Left (px)', 'onespace-theme2'),
+        'section'     => 'onespace_header_mobile',
+        'type'        => 'number',
+        'priority'    => 10,
+        'input_attrs' => array('min' => 0, 'max' => 50, 'step' => 1),
+    ));
+    
+    $wp_customize->add_setting('mobile_header_padding_right', array(
+        'default'           => 16,
+        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 0, 50); },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('mobile_header_padding_right', array(
+        'label'       => __('Mobile Header Padding Right (px)', 'onespace-theme2'),
+        'section'     => 'onespace_header_mobile',
+        'type'        => 'number',
+        'priority'    => 11,
+        'input_attrs' => array('min' => 0, 'max' => 50, 'step' => 1),
+    ));
+    
+    $wp_customize->add_setting('mobile_header_margin_top', array(
+        'default'           => 0,
+        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 0, 30); },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('mobile_header_margin_top', array(
+        'label'       => __('Mobile Header Margin Top (px)', 'onespace-theme2'),
+        'section'     => 'onespace_header_mobile',
+        'type'        => 'number',
+        'priority'    => 12,
+        'input_attrs' => array('min' => 0, 'max' => 30, 'step' => 1),
+    ));
+    
+    $wp_customize->add_setting('mobile_header_margin_bottom', array(
+        'default'           => 0,
+        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 0, 30); },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('mobile_header_margin_bottom', array(
+        'label'       => __('Mobile Header Margin Bottom (px)', 'onespace-theme2'),
+        'section'     => 'onespace_header_mobile',
+        'type'        => 'number',
+        'priority'    => 13,
+        'input_attrs' => array('min' => 0, 'max' => 30, 'step' => 1),
+    ));
+    
     // Toggle Icon Mode
     $wp_customize->add_setting('header_toggle_icon_mode', array(
         'default'           => 'text',
@@ -840,6 +1183,133 @@ function onespace_register_dark_light_settings($wp_customize) {
         'section'  => 'onespace_header_toggle',
         'priority' => 450,
     )));
+    
+    // Mobile Icon Styling Controls
+    $wp_customize->add_setting('mobile_dark_light_icon_size', array(
+        'default'           => 16,
+        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 8, 48); },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('mobile_dark_light_icon_size', array(
+        'label'       => __('Dark/Light Icon Size (px)', 'onespace-theme2'),
+        'section'     => 'onespace_header_toggle',
+        'type'        => 'number',
+        'priority'    => 451,
+        'input_attrs' => array('min' => 8, 'max' => 48, 'step' => 1),
+    ));
+    
+    $wp_customize->add_setting('mobile_dark_light_padding', array(
+        'default'           => 8,
+        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 0, 30); },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('mobile_dark_light_padding', array(
+        'label'       => __('Dark/Light Padding (px)', 'onespace-theme2'),
+        'section'     => 'onespace_header_toggle',
+        'type'        => 'number',
+        'priority'    => 452,
+        'input_attrs' => array('min' => 0, 'max' => 30, 'step' => 1),
+    ));
+    
+    $wp_customize->add_setting('mobile_dark_light_margin', array(
+        'default'           => 4,
+        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 0, 20); },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('mobile_dark_light_margin', array(
+        'label'       => __('Dark/Light Margin (px)', 'onespace-theme2'),
+        'section'     => 'onespace_header_toggle',
+        'type'        => 'number',
+        'priority'    => 453,
+        'input_attrs' => array('min' => 0, 'max' => 20, 'step' => 1),
+    ));
+    
+    $wp_customize->add_setting('mobile_search_icon_size', array(
+        'default'           => 16,
+        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 8, 48); },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('mobile_search_icon_size', array(
+        'label'       => __('Search Icon Size (px)', 'onespace-theme2'),
+        'section'     => 'onespace_header_toggle',
+        'type'        => 'number',
+        'priority'    => 454,
+        'input_attrs' => array('min' => 8, 'max' => 48, 'step' => 1),
+    ));
+    
+    $wp_customize->add_setting('mobile_search_padding', array(
+        'default'           => 8,
+        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 0, 30); },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('mobile_search_padding', array(
+        'label'       => __('Search Padding (px)', 'onespace-theme2'),
+        'section'     => 'onespace_header_toggle',
+        'type'        => 'number',
+        'priority'    => 455,
+        'input_attrs' => array('min' => 0, 'max' => 30, 'step' => 1),
+    ));
+    
+    $wp_customize->add_setting('mobile_search_margin', array(
+        'default'           => 4,
+        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 0, 20); },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('mobile_search_margin', array(
+        'label'       => __('Search Margin (px)', 'onespace-theme2'),
+        'section'     => 'onespace_header_toggle',
+        'type'        => 'number',
+        'priority'    => 456,
+        'input_attrs' => array('min' => 0, 'max' => 20, 'step' => 1),
+    ));
+    
+    $wp_customize->add_setting('mobile_menu_icon_size', array(
+        'default'           => 18,
+        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 8, 48); },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('mobile_menu_icon_size', array(
+        'label'       => __('Menu Toggle Icon Size (px)', 'onespace-theme2'),
+        'section'     => 'onespace_header_toggle',
+        'type'        => 'number',
+        'priority'    => 457,
+        'input_attrs' => array('min' => 8, 'max' => 48, 'step' => 1),
+    ));
+    
+    $wp_customize->add_setting('mobile_menu_padding', array(
+        'default'           => 8,
+        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 0, 30); },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('mobile_menu_padding', array(
+        'label'       => __('Menu Toggle Padding (px)', 'onespace-theme2'),
+        'section'     => 'onespace_header_toggle',
+        'type'        => 'number',
+        'priority'    => 458,
+        'input_attrs' => array('min' => 0, 'max' => 30, 'step' => 1),
+    ));
+    
+    $wp_customize->add_setting('mobile_menu_margin', array(
+        'default'           => 4,
+        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 0, 20); },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('mobile_menu_margin', array(
+        'label'       => __('Menu Toggle Margin (px)', 'onespace-theme2'),
+        'section'     => 'onespace_header_toggle',
+        'type'        => 'number',
+        'priority'    => 459,
+        'input_attrs' => array('min' => 0, 'max' => 20, 'step' => 1),
+    ));
     
     // Toggle Background Color (moved to Dark/ Light Theme Settings)
     $wp_customize->add_setting('header_toggle_bg_color', array(
@@ -1027,6 +1497,134 @@ function onespace_register_dark_light_settings($wp_customize) {
         
         $priority += 10;
     }
+}
+
+/**
+ * Register mobile settings
+ */
+function onespace_register_mobile_settings($wp_customize) {
+    
+    // Mobile Logo Settings
+    $wp_customize->add_setting('mobile_logo', array(
+        'default'           => '',
+        'sanitize_callback' => 'absint',
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control(new WP_Customize_Media_Control($wp_customize, 'mobile_logo', array(
+        'label'       => __('Mobile Logo', 'onespace-theme2'),
+        'description' => __('Upload a logo specifically for mobile devices. If not set, desktop logo will be used.', 'onespace-theme2'),
+        'section'     => 'onespace_header_mobile',
+        'mime_type'   => 'image',
+        'priority'    => 1,
+    )));
+    
+    // Mobile Logo Width Value
+    $wp_customize->add_setting('mobile_logo_width_value', array(
+        'default'           => 120,
+        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 20, 500); },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('mobile_logo_width_value', array(
+        'label'       => __('Mobile Logo Width Value', 'onespace-theme2'),
+        'section'     => 'onespace_header_mobile',
+        'type'        => 'number',
+        'priority'    => 2,
+        'input_attrs' => array('min' => 20, 'max' => 500, 'step' => 1),
+    ));
+    
+    // Mobile Logo Width Unit
+    $wp_customize->add_setting('mobile_logo_width_unit', array(
+        'default'           => 'px',
+        'sanitize_callback' => function($value) {
+            $allowed = array('px', '%', 'em', 'rem', 'vw');
+            return in_array($value, $allowed) ? $value : 'px';
+        },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('mobile_logo_width_unit', array(
+        'label'   => __('Mobile Logo Width Unit', 'onespace-theme2'),
+        'section' => 'onespace_header_mobile',
+        'type'    => 'select',
+        'priority' => 3,
+        'choices' => array(
+            'px'  => __('Pixels (px)', 'onespace-theme2'),
+            '%'   => __('Percentage (%)', 'onespace-theme2'),
+            'em'  => __('Em (em)', 'onespace-theme2'),
+            'rem' => __('Rem (rem)', 'onespace-theme2'),
+            'vw'  => __('Viewport Width (vw)', 'onespace-theme2'),
+        ),
+    ));
+    
+    // Mobile Logo Height Value
+    $wp_customize->add_setting('mobile_logo_height_value', array(
+        'default'           => 40,
+        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 20, 200); },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('mobile_logo_height_value', array(
+        'label'       => __('Mobile Logo Height Value', 'onespace-theme2'),
+        'section'     => 'onespace_header_mobile',
+        'type'        => 'number',
+        'priority'    => 4,
+        'input_attrs' => array('min' => 20, 'max' => 200, 'step' => 1),
+    ));
+    
+    // Mobile Logo Height Unit
+    $wp_customize->add_setting('mobile_logo_height_unit', array(
+        'default'           => 'px',
+        'sanitize_callback' => function($value) {
+            $allowed = array('px', '%', 'em', 'rem', 'vh', 'auto');
+            return in_array($value, $allowed) ? $value : 'px';
+        },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('mobile_logo_height_unit', array(
+        'label'   => __('Mobile Logo Height Unit', 'onespace-theme2'),
+        'section' => 'onespace_header_mobile',
+        'type'    => 'select',
+        'priority' => 5,
+        'choices' => array(
+            'px'   => __('Pixels (px)', 'onespace-theme2'),
+            '%'    => __('Percentage (%)', 'onespace-theme2'),
+            'em'   => __('Em (em)', 'onespace-theme2'),
+            'rem'  => __('Rem (rem)', 'onespace-theme2'),
+            'vh'   => __('Viewport Height (vh)', 'onespace-theme2'),
+            'auto' => __('Auto', 'onespace-theme2'),
+        ),
+    ));
+    
+    // Show Logo on Mobile
+    $wp_customize->add_setting('show_mobile_logo', array(
+        'default'           => true,
+        'sanitize_callback' => function($value) { return (bool) $value; },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('show_mobile_logo', array(
+        'label'   => __('Show Logo on Mobile', 'onespace-theme2'),
+        'section' => 'onespace_header_mobile',
+        'type'    => 'checkbox',
+        'priority' => 6,
+    ));
+    
+    // Show Tagline on Mobile
+    $wp_customize->add_setting('show_mobile_tagline', array(
+        'default'           => true,
+        'sanitize_callback' => function($value) { return (bool) $value; },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('show_mobile_tagline', array(
+        'label'   => __('Show Tagline on Mobile', 'onespace-theme2'),
+        'section' => 'onespace_header_mobile',
+        'type'    => 'checkbox',
+        'priority' => 7,
+    ));
 }
 
 /**

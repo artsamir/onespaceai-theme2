@@ -26,6 +26,25 @@ body {
     color: #333;
 }
 
+/* ===== CUSTOMIZER STYLING ===== */
+/* Mobile View Section Separator Styling */
+.customize-control .customize-control-description hr {
+    border: none;
+    border-top: 2px solid #0073aa;
+    margin: 15px 0;
+}
+
+.customize-control .customize-control-description h3 {
+    color: #0073aa;
+    font-weight: 600;
+    font-size: 14px;
+    margin: 10px 0;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-left: 4px solid #0073aa;
+    border-radius: 0 4px 4px 0;
+}
+
 /* Header Styles */
 .site-header {
     display: grid;
@@ -246,6 +265,19 @@ body.dark-mode .toggle-icon:hover {
     background: var(--toggle-hover-bg-dark, #3a3f47);
 }
 
+/* Desktop - hide mobile-only elements */
+@media (min-width: 769px) {
+    .mobile-search-toggle,
+    .menu-toggle,
+    .mobile-logo {
+        display: none !important;
+    }
+    
+    .desktop-logo {
+        display: block;
+    }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .site-header {
@@ -297,10 +329,118 @@ body.dark-mode .toggle-icon:hover {
     .search-open .header-utilities {
         justify-content: center;
     }
+    /* Mobile header - ensure single row layout with customizable spacing */
+    .site-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--mobile-header-padding-top, 8px) var(--mobile-header-padding-right, 16px) var(--mobile-header-padding-bottom, 8px) var(--mobile-header-padding-left, 16px);
+        margin: var(--mobile-header-margin-top, 0px) 0 var(--mobile-header-margin-bottom, 0px) 0;
+        min-height: 60px;
+    }
+    
+    .site-branding {
+        flex: 1;
+        display: flex;
+        align-items: center;
+    }
+    
     /* Keep dark/light toggle visible alongside search icon normally */
     .header-utilities {
         display: flex;
-        gap: 0.75rem;
+        align-items: center;
+        gap: 0.5rem;
+        flex-shrink: 0;
+    }
+    
+    /* Mobile icon styling */
+    .dark-light-toggle .toggle-icon {
+        font-size: var(--mobile-dark-light-size);
+        padding: var(--mobile-dark-light-padding);
+        margin: var(--mobile-dark-light-margin);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .mobile-search-toggle .toggle-icon {
+        font-size: var(--mobile-search-size);
+        padding: var(--mobile-search-padding);
+        margin: var(--mobile-search-margin);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .menu-toggle .toggle-icon {
+        font-size: var(--mobile-menu-size);
+        padding: var(--mobile-menu-padding);
+        margin: var(--mobile-menu-margin);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Ensure navigation is hidden on mobile */
+    .main-navigation {
+        display: none;
+    }
+    
+    /* Mobile logo controls */
+    .desktop-logo {
+        display: none;
+    }
+    
+    .mobile-logo {
+        display: block;
+    }
+    
+    .mobile-logo img {
+        width: var(--mobile-logo-width);
+        height: var(--mobile-logo-height);
+        object-fit: contain;
+    }
+    
+    /* If no mobile logo is set, show desktop logo */
+    .site-logo:not(.has-mobile-logo) .desktop-logo {
+        display: block;
+    }
+    
+    .site-logo:not(.has-mobile-logo) .mobile-logo {
+        display: none;
+    }
+    
+    /* Mobile visibility controls */
+    .site-logo.hide-mobile-logo .desktop-logo,
+    .site-logo.hide-mobile-logo .mobile-logo {
+        display: none !important;
+    }
+    
+    /* Hide taglines on mobile - multiple selectors for better targeting */
+    .site-logo.hide-mobile-tagline .mobile-tagline,
+    .site-logo.hide-mobile-tagline .site-tagline,
+    .site-tagline.mobile-hidden,
+    .mobile-tagline.mobile-hidden {
+        display: none !important;
+    }
+    
+    /* Mobile tagline spacing */
+    .site-tagline {
+        margin: 0.25rem 0 0 0;
+        font-size: 0.85rem;
+        opacity: 0.8;
+    }
+    
+    /* Ensure all mobile toggles are visible and properly sized */
+    .menu-toggle,
+    .mobile-search-toggle,
+    .dark-light-toggle {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 }
 

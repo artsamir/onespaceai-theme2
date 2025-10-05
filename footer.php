@@ -11,24 +11,28 @@
         <div class="footer-top">
             <div class="footer-content">
 
-                <!-- Brand image/title area -->
-                <div class="footer-branding">
-                    <?php if (has_custom_logo()) : ?>
-                        <div class="footer-logo">
-                            <?php the_custom_logo(); ?>
-                        </div>
-                    <?php else : ?>
-                        <div class="footer-title">
-                            <a href="<?php echo esc_url(home_url('/')); ?>" rel="home">
-                                <?php bloginfo('name'); ?>
-                            </a>
-                        </div>
-                    <?php endif; ?>
-                    <?php if (get_bloginfo('description')) : ?>
-                        <div class="footer-description">
-                            <?php bloginfo('description'); ?>
-                        </div>
-                    <?php endif; ?>
+                <!-- Brand image/title area (always rendered for live preview) -->
+                <div class="footer-branding-wrapper" data-footer-branding-wrapper <?php if ( ! get_theme_mod( 'footer_branding_enable', true ) ) echo 'style="display:none"'; ?>>
+                    <?php
+                        $fb_image_id = get_theme_mod( 'footer_branding_image', 0 );
+                        if ( $fb_image_id ) {
+                            echo wp_get_attachment_image( $fb_image_id, 'full', false, array( 'class' => 'footer-branding-image' ) );
+                        } elseif ( has_custom_logo() ) { ?>
+                            <div class="footer-logo">
+                                <?php the_custom_logo(); ?>
+                            </div>
+                        <?php } else { ?>
+                            <div class="footer-title">
+                                <a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
+                                    <?php bloginfo( 'name' ); ?>
+                                </a>
+                            </div>
+                        <?php }
+
+                        $tagline_enabled = get_theme_mod( 'footer_branding_tagline_enable', true );
+                        $tagline_value = get_theme_mod( 'footer_branding_tagline', get_bloginfo( 'description' ) );
+                        echo '<div class="footer-tagline" data-footer-tagline ' . ( $tagline_enabled && $tagline_value ? '' : 'style="display:none"' ) . '>' . esc_html( $tagline_value ) . '</div>';
+                    ?>
                 </div>
                 <!-- Footer widgets: up to three columns -->
                 <div class="footer-widgets">

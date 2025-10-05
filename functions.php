@@ -161,8 +161,18 @@ function onespace_customize_preview_scripts() {
         ONESPACE_THEME_VERSION,
         true
     );
+    // Footer branding live preview
+    wp_enqueue_script(
+        'onespace-footer-branding-preview',
+        ONESPACE_THEME_URI . '/js/footer-branding-customizer.js',
+        array('jquery','customize-preview'),
+        ONESPACE_THEME_VERSION,
+        true
+    );
 }
 add_action('customize_preview_init', 'onespace_customize_preview_scripts');
+
+// Mobile view toggle JavaScript no longer needed - using separate section
 
 /**
  * Load customizer files
@@ -176,6 +186,11 @@ function onespace_load_customizer() {
 
     // Load footer customizer settings
     require_once ONESPACE_THEME_DIR . '/inc/customizer-footer.php';
+    
+    // Load footer branding customizer settings (new)
+    if ( file_exists( ONESPACE_THEME_DIR . '/inc/customizer-footer-branding.php' ) ) {
+        require_once ONESPACE_THEME_DIR . '/inc/customizer-footer-branding.php';
+    }
 }
 add_action('customize_register', 'onespace_load_customizer', 1);
 
@@ -271,6 +286,15 @@ function onespace_generate_css_vars() {
     
     $css_vars['--logo-width'] = intval($logo_width) . $logo_width_unit;
     $css_vars['--logo-height'] = intval($logo_height) . $logo_height_unit;
+    
+    // Mobile logo dimensions (now in Header Toggle Settings)
+    $mobile_logo_width = get_theme_mod('mobile_logo_width_value', 120);
+    $mobile_logo_width_unit = get_theme_mod('mobile_logo_width_unit', 'px');
+    $mobile_logo_height = get_theme_mod('mobile_logo_height_value', 40);
+    $mobile_logo_height_unit = get_theme_mod('mobile_logo_height_unit', 'px');
+    
+    $css_vars['--mobile-logo-width'] = intval($mobile_logo_width) . $mobile_logo_width_unit;
+    $css_vars['--mobile-logo-height'] = ($mobile_logo_height_unit === 'auto') ? 'auto' : (intval($mobile_logo_height) . $mobile_logo_height_unit);
     
     // Tagline gap
     $tagline_gap = get_theme_mod('header_tagline_gap', 1);
@@ -389,6 +413,63 @@ function onespace_generate_css_vars() {
     $toggle_offset_y = get_theme_mod('header_toggle_offset_y', 0);
     $css_vars['--toggle-offset-x'] = floatval($toggle_offset_x) . 'rem';
     $css_vars['--toggle-offset-y'] = floatval($toggle_offset_y) . 'rem';
+    
+    // Mobile icon styling
+    $mobile_dark_light_size = get_theme_mod('mobile_dark_light_icon_size', 16);
+    $mobile_dark_light_padding = get_theme_mod('mobile_dark_light_padding', 8);
+    $mobile_dark_light_margin = get_theme_mod('mobile_dark_light_margin', 4);
+    $mobile_search_size = get_theme_mod('mobile_search_icon_size', 16);
+    $mobile_search_padding = get_theme_mod('mobile_search_padding', 8);
+    $mobile_search_margin = get_theme_mod('mobile_search_margin', 4);
+    $mobile_menu_size = get_theme_mod('mobile_menu_icon_size', 18);
+    $mobile_menu_padding = get_theme_mod('mobile_menu_padding', 8);
+    $mobile_menu_margin = get_theme_mod('mobile_menu_margin', 4);
+    
+    $css_vars['--mobile-dark-light-size'] = intval($mobile_dark_light_size) . 'px';
+    $css_vars['--mobile-dark-light-padding'] = intval($mobile_dark_light_padding) . 'px';
+    $css_vars['--mobile-dark-light-margin'] = intval($mobile_dark_light_margin) . 'px';
+    $css_vars['--mobile-search-size'] = intval($mobile_search_size) . 'px';
+    $css_vars['--mobile-search-padding'] = intval($mobile_search_padding) . 'px';
+    $css_vars['--mobile-search-margin'] = intval($mobile_search_margin) . 'px';
+    $css_vars['--mobile-menu-size'] = intval($mobile_menu_size) . 'px';
+    $css_vars['--mobile-menu-padding'] = intval($mobile_menu_padding) . 'px';
+    $css_vars['--mobile-menu-margin'] = intval($mobile_menu_margin) . 'px';
+    
+    // Mobile icon styling
+    $mobile_dark_light_size = get_theme_mod('mobile_dark_light_icon_size', 16);
+    $mobile_dark_light_padding = get_theme_mod('mobile_dark_light_padding', 8);
+    $mobile_dark_light_margin = get_theme_mod('mobile_dark_light_margin', 4);
+    $mobile_search_size = get_theme_mod('mobile_search_icon_size', 16);
+    $mobile_search_padding = get_theme_mod('mobile_search_padding', 8);
+    $mobile_search_margin = get_theme_mod('mobile_search_margin', 4);
+    $mobile_menu_size = get_theme_mod('mobile_menu_icon_size', 18);
+    $mobile_menu_padding = get_theme_mod('mobile_menu_padding', 8);
+    $mobile_menu_margin = get_theme_mod('mobile_menu_margin', 4);
+    
+    $css_vars['--mobile-dark-light-size'] = intval($mobile_dark_light_size) . 'px';
+    $css_vars['--mobile-dark-light-padding'] = intval($mobile_dark_light_padding) . 'px';
+    $css_vars['--mobile-dark-light-margin'] = intval($mobile_dark_light_margin) . 'px';
+    $css_vars['--mobile-search-size'] = intval($mobile_search_size) . 'px';
+    $css_vars['--mobile-search-padding'] = intval($mobile_search_padding) . 'px';
+    $css_vars['--mobile-search-margin'] = intval($mobile_search_margin) . 'px';
+    $css_vars['--mobile-menu-size'] = intval($mobile_menu_size) . 'px';
+    $css_vars['--mobile-menu-padding'] = intval($mobile_menu_padding) . 'px';
+    $css_vars['--mobile-menu-margin'] = intval($mobile_menu_margin) . 'px';
+    
+    // Mobile header spacing
+    $mobile_header_padding_top = get_theme_mod('mobile_header_padding_top', 8);
+    $mobile_header_padding_bottom = get_theme_mod('mobile_header_padding_bottom', 8);
+    $mobile_header_padding_left = get_theme_mod('mobile_header_padding_left', 16);
+    $mobile_header_padding_right = get_theme_mod('mobile_header_padding_right', 16);
+    $mobile_header_margin_top = get_theme_mod('mobile_header_margin_top', 0);
+    $mobile_header_margin_bottom = get_theme_mod('mobile_header_margin_bottom', 0);
+    
+    $css_vars['--mobile-header-padding-top'] = intval($mobile_header_padding_top) . 'px';
+    $css_vars['--mobile-header-padding-bottom'] = intval($mobile_header_padding_bottom) . 'px';
+    $css_vars['--mobile-header-padding-left'] = intval($mobile_header_padding_left) . 'px';
+    $css_vars['--mobile-header-padding-right'] = intval($mobile_header_padding_right) . 'px';
+    $css_vars['--mobile-header-margin-top'] = intval($mobile_header_margin_top) . 'px';
+    $css_vars['--mobile-header-margin-bottom'] = intval($mobile_header_margin_bottom) . 'px';
 
     // Footer copyright styles
     $footer_font_family = get_theme_mod('footer_credits_font_family', '');
@@ -472,6 +553,51 @@ function onespace_custom_css() {
     echo '</style>';
 }
 add_action('wp_head', 'onespace_custom_css');
+
+/**
+ * Footer branding inline CSS
+ */
+function onespace_footer_branding_inline_css() {
+    // Always output base styles so enabling via Customizer postMessage shows instantly
+    $margin   = intval( get_theme_mod('footer_branding_margin', 0) );
+    $offset_x = intval( get_theme_mod('footer_branding_offset_x', 0) );
+    $offset_y = intval( get_theme_mod('footer_branding_offset_y', 0) );
+    $pos      = get_theme_mod('footer_branding_position', 'left');
+    $logo_w   = intval( get_theme_mod('footer_branding_logo_width', 0) );
+    $logo_h   = intval( get_theme_mod('footer_branding_logo_height', 0) );
+    $layout   = get_theme_mod('footer_branding_logo_layout', 'logo-top');
+
+    $justify = 'flex-start';
+    if ($pos === 'center') { $justify = 'center'; }
+    elseif ($pos === 'right') { $justify = 'flex-end'; }
+
+    $size_rules = '';
+    if ( $logo_w > 0 ) { $size_rules .= 'width:'.$logo_w.'px;'; }
+    if ( $logo_h > 0 ) { $size_rules .= 'height:'.$logo_h.'px;'; }
+    if ( $size_rules ) { $size_rules .= 'object-fit:contain;'; }
+
+    // Determine flex-direction & ordering based on layout
+    $direction = 'column';
+    $tagline_margin = 'margin-top:.5rem;';
+    $wrap_class_extra = '';
+    if ( $layout === 'logo-bottom' ) {
+        $direction = 'column-reverse';
+        $tagline_margin = 'margin-bottom:.5rem;';
+    } elseif ( $layout === 'logo-left' ) {
+        $direction = 'row';
+        $tagline_margin = 'margin-left:.75rem;';
+        $wrap_class_extra = ' flex-row';
+    } elseif ( $layout === 'logo-right' ) {
+        $direction = 'row-reverse';
+        $tagline_margin = 'margin-right:.75rem;';
+        $wrap_class_extra = ' flex-row';
+    }
+
+    // True full width - escape parent container completely
+    $css = ".footer-branding-wrapper{display:flex;flex-direction:$direction;align-items:$justify;width:100vw;position:relative;left:50%;transform:translateX(-50%) translate({$offset_x}%,{$offset_y}%);margin-top:{$margin}%;margin-bottom:{$margin}%;transition:transform .25s ease;padding-left:1rem;padding-right:1rem;box-sizing:border-box}.footer-branding-wrapper.flex-row{align-items:center}.footer-branding-wrapper img{max-width:100%;height:auto;display:block;$size_rules}.footer-branding-wrapper .footer-tagline{" . $tagline_margin . "font-size:.9rem;opacity:.85}";
+    echo '<style id="footer-branding-css">' . esc_html( $css ) . '</style>';
+}
+add_action('wp_head','onespace_footer_branding_inline_css', 30);
 
 /**
  * Body classes

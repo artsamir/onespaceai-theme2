@@ -33,15 +33,42 @@
                 );
             }
             
+            // Mobile logo logic
+            $mobile_logo_id = get_theme_mod('header_mobile_logo');
+            $has_mobile_logo = !empty($mobile_logo_id);
+            $show_mobile_logo = get_theme_mod('header_mobile_show_logo', true);
+            $show_mobile_tagline = get_theme_mod('header_mobile_show_tagline', true);
+            
+            // Build logo classes
+            $logo_classes = array('site-logo');
+            if ($has_mobile_logo) $logo_classes[] = 'has-mobile-logo';
+            if (!$show_mobile_logo) $logo_classes[] = 'hide-mobile-logo';
+            if (!$show_mobile_tagline) $logo_classes[] = 'hide-mobile-tagline';
+            $logo_class = implode(' ', $logo_classes);
+            
             if (has_custom_logo()) : ?>
-                <div class="site-logo">
-                    <?php the_custom_logo(); ?>
+                <div class="<?php echo esc_attr($logo_class); ?>">
+                    <!-- Desktop Logo -->
+                    <div class="desktop-logo">
+                        <?php the_custom_logo(); ?>
+                    </div>
+                    <!-- Mobile Logo -->
+                    <?php if ($has_mobile_logo) :
+                        $mobile_logo = wp_get_attachment_image($mobile_logo_id, 'full', false, array('class' => 'mobile-custom-logo'));
+                        if ($mobile_logo) : ?>
+                            <div class="mobile-logo">
+                                <a href="<?php echo esc_url(home_url('/')); ?>" class="mobile-custom-logo-link" rel="home">
+                                    <?php echo $mobile_logo; ?>
+                                </a>
+                            </div>
+                        <?php endif;
+                    endif; ?>
                 </div>
             <?php endif; ?>
 
             <?php if (display_header_text()) : ?>
                 <?php if ($tagline_position === 'above-title' && get_bloginfo('description')) : ?>
-                    <p class="site-tagline" <?php echo $tagline_style; ?>><?php bloginfo('description'); ?></p>
+                    <p class="site-tagline mobile-tagline" <?php echo $tagline_style; ?>><?php bloginfo('description'); ?></p>
                 <?php endif; ?>
 
                 <?php if (is_front_page() && is_home()) : ?>
@@ -51,7 +78,7 @@
                 <?php endif; ?>
 
                 <?php if (in_array($tagline_position, ['below-title', 'left-title', 'right-title']) && get_bloginfo('description')) : ?>
-                    <p class="site-tagline" <?php echo $tagline_style; ?>><?php bloginfo('description'); ?></p>
+                    <p class="site-tagline mobile-tagline" <?php echo $tagline_style; ?>><?php bloginfo('description'); ?></p>
                 <?php endif; ?>
             <?php endif; ?>
         </div><!-- .site-branding -->
@@ -111,6 +138,11 @@
                 }
             }
             ?>
+            <!-- Mobile Menu Toggle -->
+            <button class="menu-toggle" type="button" aria-controls="primary-menu" aria-expanded="false" aria-label="<?php esc_attr_e('Toggle navigation', 'onespace-theme2'); ?>">
+                <span class="toggle-icon" aria-hidden="true">☰</span>
+            </button>
+            
             <button class="mobile-search-toggle" type="button" aria-label="<?php esc_attr_e('Open search', 'onespace-theme2'); ?>" aria-expanded="false">
                 <span class="toggle-icon" aria-hidden="true">🔍</span>
             </button>
