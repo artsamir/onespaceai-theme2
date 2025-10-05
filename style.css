@@ -374,17 +374,98 @@ body.dark-mode .toggle-icon:hover {
         display: none;
         width: 100%;
         margin-top: 0.5rem;
+        transition: all 0.3s ease;
     }
-    /* When search is open, show it */
+    
+    /* Mobile Search Expanded State */
     .search-open .header-search {
         display: block;
+        position: fixed;
+        top: 52px;
+        left: 10px;
+        right: 10px;
+        width: calc(100% - 20px);
+        height: 50px;
+        margin: 0;
+        padding: 0px 49px; /* Right padding for close button */
+        background: var(--header-bg-color, #ffffff);
+        z-index: 1000;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border-radius: 12px;
     }
-    /* When search is open, hide branding, keep toggle and search visible */
+    
+    /* When search is open, hide all other elements except search toggle */
     .search-open .site-branding {
-        display: none;
+        display: none !important;
     }
+    
+    .search-open .menu-toggle {
+        display: none !important;
+    }
+    
+    .search-open .dark-light-toggle {
+        display: none !important;
+    }
+    
+    /* Search form container - full width */
+    .search-open .header-search form {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Search input - true full width */
+    .search-open .header-search input[type="search"] {
+        width: 100%;
+        height: 44px;
+        padding: 12px 16px;
+        font-size: 16px;
+        border-radius: 8px;
+        border: 2px solid var(--search-border-color, #ddd);
+        background: var(--search-bg, #f8f9fa);
+        margin: 0;
+        box-sizing: border-box;
+    }
+    
+    /* Position search toggle button inside the search bar */
     .search-open .header-utilities {
+        position: fixed;
+        top: 15px;
+        right: 20px;
+        z-index: 1001;
+        background: transparent;
+        padding: 0;
+        gap: 0;
+        width: 40px;
+        height: 40px;
+    }
+    
+    /* Search toggle button styling when search is open */
+    .search-open .mobile-search-toggle {
+        background: var(--toggle-bg-color, #f5f7fa);
+        border-radius: 50%;
+        padding: 8px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
         justify-content: center;
+        border: 2px solid var(--search-border-color, #ddd);
+    }
+    
+    /* Dark mode search expanded state */
+    body.dark-mode.search-open .header-search {
+        background: var(--header-bg-color, #2c2c2c);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    body.dark-mode.search-open .header-search input[type="search"] {
+        background: #3c3c3c;
+        border-color: #555;
+        color: #e0e0e0;
     }
     /* Mobile header - ensure single row layout with customizable spacing */
     .site-header {
@@ -1037,10 +1118,6 @@ body.footer-copyright-right .footer-credits { justify-content: flex-end; gap: 1r
     transform-origin: center;
 }
 
-/* Dark mode hamburger */
-body.dark-mode .hamburger-line {
-    /* background: #e0e0e0; */
-}
 
 /* Transform hamburger to X when menu is toggled */
 .main-navigation.toggled ~ .header-utilities .menu-toggle .hamburger .hamburger-line:nth-child(1) {
@@ -1199,4 +1276,139 @@ body.dark-mode .hamburger-line {
         display: block;
         padding: 0.75rem 0;
     }
+}
+
+/* --- Enhanced Mobile Search UI Additions --- */
+body.search-open::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    backdrop-filter: blur(4px) saturate(130%);
+    -webkit-backdrop-filter: blur(4px) saturate(130%);
+    z-index: 999;
+    animation: searchOverlayFade 180ms ease forwards;
+}
+
+@keyframes searchOverlayFade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes searchBarSlide {
+    0% { transform: translateY(-12px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+@media (max-width: 768px) {
+    .search-open .header-search {
+        animation: searchBarSlide 220ms cubic-bezier(.4,.55,.25,1) both;
+        box-shadow: 0 6px 18px -4px rgba(0,0,0,0.18), 0 2px 6px -2px rgba(0,0,0,0.12);
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    body.dark-mode.search-open .header-search {
+        border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: 0 6px 18px -4px rgba(0,0,0,0.5), 0 2px 6px -2px rgba(0,0,0,0.4);
+    }
+
+    .search-open .header-search input[type="search"] {
+        background: linear-gradient(#fff,#fff) padding-box,
+            radial-gradient(circle at 10% 10%, #4dabf710, transparent 60%) border-box;
+        transition: box-shadow .25s ease, border-color .25s ease, background-color .25s ease;
+    }
+    body.dark-mode.search-open .header-search input[type="search"] {
+        background: linear-gradient(#2f3236,#2f3236) padding-box,
+            radial-gradient(circle at 15% 15%, #4dabf733, transparent 65%) border-box;
+        color: #e6e6e6;
+    }
+    .search-open .header-search input[type="search"]:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(0,123,255,0.25);
+        border-color: #4dabf7;
+    }
+
+    /* Clear button */
+    .search-input-wrapper {
+        position: relative;
+        display: flex;
+        flex: 1;
+        align-items: center;
+    }
+    .search-clear {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0,0,0,0.06);
+        border: none;
+        color: #444;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        font-size: 16px;
+        line-height: 1;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        transition: background .2s ease, transform .2s ease;
+    }
+    .search-clear:hover { background: rgba(0,0,0,0.12); }
+    .search-clear:active { transform: translateY(-50%) scale(.9); }
+    .search-clear:focus-visible { outline: 2px solid #4dabf7; outline-offset: 2px; }
+    body.dark-mode .search-clear { background: rgba(255,255,255,0.15); color: #ddd; }
+    body.dark-mode .search-clear:hover { background: rgba(255,255,255,0.25); }
+
+    /* Toggle button (close state) */
+    .search-open .mobile-search-toggle {
+        background: rgba(255,255,255,0.75);
+        backdrop-filter: blur(6px) saturate(160%);
+        -webkit-backdrop-filter: blur(6px) saturate(160%);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        border: 1px solid rgba(0,0,0,0.1);
+        transition: background .25s ease, transform .25s ease;
+    }
+    .search-open .mobile-search-toggle:hover { background: rgba(255,255,255,0.9); }
+    body.dark-mode .search-open .mobile-search-toggle {
+        background: rgba(40,40,44,0.85);
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+    body.dark-mode .search-open .mobile-search-toggle:hover { background: rgba(55,55,60,0.9); }
+}
+/* --- End Enhanced Mobile Search UI Additions --- */
+
+/* Search term highlight */
+mark.search-highlight {
+  background: #ffe667;
+  color: #222;
+  padding: 0 2px;
+  border-radius: 3px;
+  box-decoration-break: clone;
+}
+body.dark-mode mark.search-highlight {
+  background: #b6912b;
+  color: #fff;
+}
+
+/* Narrow mobile footer spacing adjustments */
+@media (max-width: 400px) {
+  .site-footer .footer-middle .footer-navigation ul,
+  .site-footer .footer-middle .footer-navigation ul.menu,
+  .site-footer .footer-middle .footer-navigation #footer-menu,
+  .site-footer .footer-middle nav ul,
+  .site-footer .footer-middle nav ul.menu,
+  .site-footer .footer-middle nav #footer-menu {
+    gap: 0.65rem !important; /* reduce horizontal gap */
+    row-gap: 0.4rem !important; /* ensure tighter vertical wrap spacing */
+  }
+  .site-footer .footer-middle .footer-navigation a {
+    padding: 0.35rem 0.55rem !important; /* slightly tighter padding */
+    font-size: 0.82rem; /* scale down slightly for better fit */
+  }
+  /* Reduce extra top margin that might appear before second line */
+  .footer-navigation { margin-top: 0.25rem; }
+  /* If an empty li or spacing causes extra space, collapse line-height */
+  .footer-navigation li { line-height: 1.1; }
 }

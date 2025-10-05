@@ -82,21 +82,45 @@
         const searchToggle = document.querySelector('.mobile-search-toggle');
         const searchForm = document.getElementById('header-search-form');
         const searchInput = searchForm ? searchForm.querySelector('input[type="search"]') : null;
+        const clearBtn = searchForm ? searchForm.querySelector('.search-clear') : null;
         const themeToggle = document.querySelector('.dark-light-toggle');
+        const toggleIconSpan = searchToggle ? searchToggle.querySelector('.toggle-icon') : null;
 
         if (!searchToggle || !searchForm) return;
+
+        const SEARCH_ICON = '🔍';
+        const CLOSE_ICON = '✕';
+
+        function updateClearVisibility() {
+            if (!clearBtn || !searchInput) return;
+            if (searchInput.value.trim().length > 0) {
+                clearBtn.hidden = false;
+            } else {
+                clearBtn.hidden = true;
+            }
+        }
 
         function openSearch() {
             body.classList.add('search-open');
             searchToggle.setAttribute('aria-expanded', 'true');
+            if (toggleIconSpan) toggleIconSpan.textContent = CLOSE_ICON;
             if (searchInput) {
-                setTimeout(() => searchInput.focus(), 0);
+                setTimeout(() => {
+                    searchInput.focus();
+                    searchInput.select();
+                    updateClearVisibility();
+                }, 120);
             }
         }
 
         function closeSearch() {
             body.classList.remove('search-open');
             searchToggle.setAttribute('aria-expanded', 'false');
+            if (toggleIconSpan) toggleIconSpan.textContent = SEARCH_ICON;
+            if (searchInput && searchInput.value === '') {
+                searchInput.blur();
+            }
+            if (clearBtn) clearBtn.hidden = true;
         }
 
         // Toggle search on icon click
@@ -108,6 +132,18 @@
                 openSearch();
             }
         });
+
+        // Clear button logic
+        if (clearBtn && searchInput) {
+            clearBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                searchInput.value = '';
+                updateClearVisibility();
+                searchInput.focus();
+            });
+
+            searchInput.addEventListener('input', updateClearVisibility);
+        }
 
         // Close when clicking outside search area
         document.addEventListener('click', function(e) {
@@ -236,9 +272,52 @@
         }
     }
 
+    // Highlight search terms in results
+    function highlightSearchTerms() {
+        const params = new URLSearchParams(window.location.search);
+        const query = params.get('s');
+        if (!query) return;
+
+        // Tokenize (split on whitespace and punctuation) and filter short tokens
+        let terms = query.split(/\s+/).map(t => t.trim()).filter(t => t.length > 1);
+        if (!terms.length) return;
+
+        // Deduplicate
+        terms = [...new Set(terms)];
+
+        // Build regex (escape special chars)
+        const escaped = terms.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+        if (!escaped.length) return;
+        const regex = new RegExp('(' + escaped.join('|') + ')', 'gi');
+
+        const containers = document.querySelectorAll('.post, .post-article, .entry-summary, .entry-content, .entry-title');
+        containers.forEach(el => {
+            // Avoid re-highlighting
+            if (!el || !el.childNodes) return;
+            walkNodes(el, 0);
+        });
+
+        function walkNodes(node, depth) {
+            if (depth > 60) return; // safety
+            if (node.nodeType === 3) { // text
+                const text = node.textContent;
+                if (regex.test(text)) {
+                    const frag = document.createElement('span');
+                    frag.innerHTML = text.replace(regex, m => `<mark class="search-highlight" aria-label="Highlighted search term">${m}</mark>`);
+                    node.parentNode.replaceChild(frag, node);
+                }
+                regex.lastIndex = 0; // reset after test
+            } else if (node.nodeType === 1 && node.tagName !== 'SCRIPT' && node.tagName !== 'STYLE' && !node.closest('mark.search-highlight')) {
+                // Skip already highlighted sections
+                node.childNodes.forEach(child => walkNodes(child, depth + 1));
+            }
+        }
+    }
+
     // Initialize when DOM is ready
     $(document).ready(function() {
         initTheme();
+        highlightSearchTerms();
     });
 
     // Handle window resize

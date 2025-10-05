@@ -147,7 +147,7 @@
             </button>
 
             <form role="search" method="get" class="search-form header-search" id="header-search-form" action="<?php echo esc_url($action_url); ?>">
-                <label>
+                <label class="search-input-wrapper">
                     <span class="screen-reader-text"><?php echo _x('Search for:', 'label', 'onespace-theme2'); ?></span>
                     <input type="search" 
                            class="search-field" 
@@ -155,6 +155,7 @@
                            value="<?php echo get_search_query(); ?>" 
                            name="s" 
                            autocomplete="off" />
+                    <button type="button" class="search-clear" aria-label="<?php esc_attr_e('Clear search', 'onespace-theme2'); ?>" hidden>&times;</button>
                 </label>
                 <?php echo $hidden_fields; ?>
                 <input type="submit" class="search-submit screen-reader-text" value="<?php echo esc_attr_x('Search', 'submit button', 'onespace-theme2'); ?>" />
