@@ -41,7 +41,7 @@ function onespace_header_customizer($wp_customize) {
     ));
 
     $wp_customize->add_section('onespace_header_toggle', array(
-        'title'    => __('Header Toggle Settings', 'onespace-theme2'),
+        'title'    => __('Header Toggle settings (Mobile View)', 'onespace-theme2'),
         'priority' => 34,
     ));
     
@@ -57,7 +57,6 @@ function onespace_header_customizer($wp_customize) {
     onespace_register_menu_settings($wp_customize);
     onespace_register_search_settings($wp_customize);
     onespace_register_dark_light_settings($wp_customize);
-    onespace_register_mobile_settings($wp_customize);
     onespace_register_search_result_settings($wp_customize);
 }
 add_action('customize_register', 'onespace_header_customizer');
@@ -118,21 +117,25 @@ function onespace_register_base_header_settings($wp_customize) {
         'priority' => 10,
     )));
     
-
+    // Header Height
+    $wp_customize->add_setting('header_height', array(
+        'default'           => 56,
+        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 30, 200); },
+        'transport'         => 'postMessage',
+    ));
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
+    $wp_customize->add_control('header_height', array(
+        'label'       => __('Header Height (px)', 'onespace-theme2'),
+        'section'     => 'onespace_header',
+        'type'        => 'number',
+        'priority'    => 20,
+        'input_attrs' => array(
+            'min'  => 30,
+            'max'  => 200,
+            'step' => 1,
+        ),
+        'description' => __('Set the height of the header in pixels.', 'onespace-theme2'),
+    ));
 }
 
 /**
@@ -298,132 +301,7 @@ function onespace_register_site_settings($wp_customize) {
         ),
     ));
     
-    // Mobile Logo
-    $wp_customize->add_setting('header_mobile_logo', array(
-        'default'           => '',
-        'sanitize_callback' => 'absint',
-        'transport'         => 'postMessage',
-    ));
-    
-    $wp_customize->add_control(new WP_Customize_Media_Control(
-        $wp_customize,
-        'header_mobile_logo',
-        array(
-            'label'       => __('Mobile Logo', 'onespace-theme2'),
-            'section'     => 'title_tagline',
-            'mime_type'   => 'image',
-            'priority'    => 57,
-            'description' => __('Upload a separate logo for mobile devices. If not set, the main logo will be used.', 'onespace-theme2'),
-        )
-    ));
-    
-    // Mobile Logo Width Value
-    $wp_customize->add_setting('header_mobile_logo_width_value', array(
-        'default'           => 150,
-        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 1, 800); },
-        'transport'         => 'postMessage',
-    ));
-    
-    $wp_customize->add_control('header_mobile_logo_width_value', array(
-        'label'       => __('Mobile Logo Width Value', 'onespace-theme2'),
-        'section'     => 'title_tagline',
-        'type'        => 'number',
-        'priority'    => 58,
-        'input_attrs' => array(
-            'min' => 1,
-            'max' => 800,
-        ),
-    ));
-    
-    // Mobile Logo Width Unit
-    $wp_customize->add_setting('header_mobile_logo_width_unit', array(
-        'default'           => 'px',
-        'sanitize_callback' => 'onespace_sanitize_dimension_unit',
-        'transport'         => 'postMessage',
-    ));
-    
-    $wp_customize->add_control('header_mobile_logo_width_unit', array(
-        'label'    => __('Mobile Logo Width Unit', 'onespace-theme2'),
-        'section'  => 'title_tagline',
-        'type'     => 'select',
-        'priority' => 59,
-        'choices'  => array(
-            'px'  => 'px',
-            'em'  => 'em',
-            'rem' => 'rem',
-            '%'   => '%',
-            'vh'  => 'vh',
-            'vw'  => 'vw',
-        ),
-    ));
-    
-    // Mobile Logo Height Value
-    $wp_customize->add_setting('header_mobile_logo_height_value', array(
-        'default'           => 60,
-        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 1, 400); },
-        'transport'         => 'postMessage',
-    ));
-    
-    $wp_customize->add_control('header_mobile_logo_height_value', array(
-        'label'       => __('Mobile Logo Height Value', 'onespace-theme2'),
-        'section'     => 'title_tagline',
-        'type'        => 'number',
-        'priority'    => 60,
-        'input_attrs' => array(
-            'min' => 1,
-            'max' => 400,
-        ),
-    ));
-    
-    // Mobile Logo Height Unit
-    $wp_customize->add_setting('header_mobile_logo_height_unit', array(
-        'default'           => 'px',
-        'sanitize_callback' => 'onespace_sanitize_dimension_unit',
-        'transport'         => 'postMessage',
-    ));
-    
-    $wp_customize->add_control('header_mobile_logo_height_unit', array(
-        'label'    => __('Mobile Logo Height Unit', 'onespace-theme2'),
-        'section'  => 'title_tagline',
-        'type'     => 'select',
-        'priority' => 61,
-        'choices'  => array(
-            'px'  => 'px',
-            'em'  => 'em',
-            'rem' => 'rem',
-            '%'   => '%',
-            'vh'  => 'vh',
-            'vw'  => 'vw',
-        ),
-    ));
-    
-    // Mobile Logo Visibility
-    $wp_customize->add_setting('header_mobile_show_logo', array(
-        'default'           => true,
-        'sanitize_callback' => function($value) { return (bool) $value; },
-        'transport'         => 'postMessage',
-    ));
-    
-    $wp_customize->add_control('header_mobile_show_logo', array(
-        'label'    => __('Show Logo on Mobile', 'onespace-theme2'),
-        'section'  => 'title_tagline',
-        'type'     => 'checkbox',
-        'priority' => 62,
-    ));
-    
-    // Mobile Tagline Visibility
-    $wp_customize->add_setting('header_mobile_show_tagline', array(
-        'default'           => true,
-        'sanitize_callback' => function($value) { return (bool) $value; },
-        'transport'         => 'postMessage',
-    ));
-    
-    $wp_customize->add_control('header_mobile_show_tagline', array(
-        'label'    => __('Show Tagline on Mobile', 'onespace-theme2'),
-        'section'  => 'title_tagline',
-        'type'     => 'checkbox',
-        'priority' => 63,
-    ));
+    // (Removed Mobile Logo and related mobile controls from Site Identity per request)
 }
 
 /**
@@ -1002,7 +880,7 @@ function onespace_register_dark_light_settings($wp_customize) {
     
     // Show Tagline on Mobile
     $wp_customize->add_setting('show_mobile_tagline', array(
-        'default'           => true,
+        'default'           => false,
         'sanitize_callback' => function($value) { return (bool) $value; },
         'transport'         => 'postMessage',
     ));
@@ -1012,6 +890,28 @@ function onespace_register_dark_light_settings($wp_customize) {
         'section' => 'onespace_header_mobile',
         'type'    => 'checkbox',
         'priority' => 7,
+    ));
+    
+    // Mobile Logo Alignment
+    $wp_customize->add_setting('mobile_logo_alignment', array(
+        'default'           => 'left',
+        'sanitize_callback' => function($value) {
+            $allowed = array('left', 'center', 'right');
+            return in_array($value, $allowed) ? $value : 'left';
+        },
+        'transport'         => 'postMessage',
+    ));
+    
+    $wp_customize->add_control('mobile_logo_alignment', array(
+        'label'   => __('Mobile Logo Alignment', 'onespace-theme2'),
+        'section' => 'onespace_header_mobile',
+        'type'    => 'select',
+        'priority' => 8,
+        'choices' => array(
+            'left'   => __('Left', 'onespace-theme2'),
+            'center' => __('Center', 'onespace-theme2'),
+            'right'  => __('Right', 'onespace-theme2'),
+        ),
     ));
     
     // Mobile Header Spacing Controls
@@ -1025,7 +925,7 @@ function onespace_register_dark_light_settings($wp_customize) {
         'label'       => __('Mobile Header Padding Top (px)', 'onespace-theme2'),
         'section'     => 'onespace_header_mobile',
         'type'        => 'number',
-        'priority'    => 8,
+        'priority'    => 10,
         'input_attrs' => array('min' => 0, 'max' => 50, 'step' => 1),
     ));
     
@@ -1039,7 +939,7 @@ function onespace_register_dark_light_settings($wp_customize) {
         'label'       => __('Mobile Header Padding Bottom (px)', 'onespace-theme2'),
         'section'     => 'onespace_header_mobile',
         'type'        => 'number',
-        'priority'    => 9,
+        'priority'    => 11,
         'input_attrs' => array('min' => 0, 'max' => 50, 'step' => 1),
     ));
     
@@ -1053,7 +953,7 @@ function onespace_register_dark_light_settings($wp_customize) {
         'label'       => __('Mobile Header Padding Left (px)', 'onespace-theme2'),
         'section'     => 'onespace_header_mobile',
         'type'        => 'number',
-        'priority'    => 10,
+        'priority'    => 12,
         'input_attrs' => array('min' => 0, 'max' => 50, 'step' => 1),
     ));
     
@@ -1067,7 +967,7 @@ function onespace_register_dark_light_settings($wp_customize) {
         'label'       => __('Mobile Header Padding Right (px)', 'onespace-theme2'),
         'section'     => 'onespace_header_mobile',
         'type'        => 'number',
-        'priority'    => 11,
+        'priority'    => 13,
         'input_attrs' => array('min' => 0, 'max' => 50, 'step' => 1),
     ));
     
@@ -1081,7 +981,7 @@ function onespace_register_dark_light_settings($wp_customize) {
         'label'       => __('Mobile Header Margin Top (px)', 'onespace-theme2'),
         'section'     => 'onespace_header_mobile',
         'type'        => 'number',
-        'priority'    => 12,
+        'priority'    => 14,
         'input_attrs' => array('min' => 0, 'max' => 30, 'step' => 1),
     ));
     
@@ -1095,7 +995,7 @@ function onespace_register_dark_light_settings($wp_customize) {
         'label'       => __('Mobile Header Margin Bottom (px)', 'onespace-theme2'),
         'section'     => 'onespace_header_mobile',
         'type'        => 'number',
-        'priority'    => 13,
+        'priority'    => 14,
         'input_attrs' => array('min' => 0, 'max' => 30, 'step' => 1),
     ));
     
@@ -1499,133 +1399,7 @@ function onespace_register_dark_light_settings($wp_customize) {
     }
 }
 
-/**
- * Register mobile settings
- */
-function onespace_register_mobile_settings($wp_customize) {
-    
-    // Mobile Logo Settings
-    $wp_customize->add_setting('mobile_logo', array(
-        'default'           => '',
-        'sanitize_callback' => 'absint',
-        'transport'         => 'postMessage',
-    ));
-    
-    $wp_customize->add_control(new WP_Customize_Media_Control($wp_customize, 'mobile_logo', array(
-        'label'       => __('Mobile Logo', 'onespace-theme2'),
-        'description' => __('Upload a logo specifically for mobile devices. If not set, desktop logo will be used.', 'onespace-theme2'),
-        'section'     => 'onespace_header_mobile',
-        'mime_type'   => 'image',
-        'priority'    => 1,
-    )));
-    
-    // Mobile Logo Width Value
-    $wp_customize->add_setting('mobile_logo_width_value', array(
-        'default'           => 120,
-        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 20, 500); },
-        'transport'         => 'postMessage',
-    ));
-    
-    $wp_customize->add_control('mobile_logo_width_value', array(
-        'label'       => __('Mobile Logo Width Value', 'onespace-theme2'),
-        'section'     => 'onespace_header_mobile',
-        'type'        => 'number',
-        'priority'    => 2,
-        'input_attrs' => array('min' => 20, 'max' => 500, 'step' => 1),
-    ));
-    
-    // Mobile Logo Width Unit
-    $wp_customize->add_setting('mobile_logo_width_unit', array(
-        'default'           => 'px',
-        'sanitize_callback' => function($value) {
-            $allowed = array('px', '%', 'em', 'rem', 'vw');
-            return in_array($value, $allowed) ? $value : 'px';
-        },
-        'transport'         => 'postMessage',
-    ));
-    
-    $wp_customize->add_control('mobile_logo_width_unit', array(
-        'label'   => __('Mobile Logo Width Unit', 'onespace-theme2'),
-        'section' => 'onespace_header_mobile',
-        'type'    => 'select',
-        'priority' => 3,
-        'choices' => array(
-            'px'  => __('Pixels (px)', 'onespace-theme2'),
-            '%'   => __('Percentage (%)', 'onespace-theme2'),
-            'em'  => __('Em (em)', 'onespace-theme2'),
-            'rem' => __('Rem (rem)', 'onespace-theme2'),
-            'vw'  => __('Viewport Width (vw)', 'onespace-theme2'),
-        ),
-    ));
-    
-    // Mobile Logo Height Value
-    $wp_customize->add_setting('mobile_logo_height_value', array(
-        'default'           => 40,
-        'sanitize_callback' => function($value) { return onespace_sanitize_integer($value, 20, 200); },
-        'transport'         => 'postMessage',
-    ));
-    
-    $wp_customize->add_control('mobile_logo_height_value', array(
-        'label'       => __('Mobile Logo Height Value', 'onespace-theme2'),
-        'section'     => 'onespace_header_mobile',
-        'type'        => 'number',
-        'priority'    => 4,
-        'input_attrs' => array('min' => 20, 'max' => 200, 'step' => 1),
-    ));
-    
-    // Mobile Logo Height Unit
-    $wp_customize->add_setting('mobile_logo_height_unit', array(
-        'default'           => 'px',
-        'sanitize_callback' => function($value) {
-            $allowed = array('px', '%', 'em', 'rem', 'vh', 'auto');
-            return in_array($value, $allowed) ? $value : 'px';
-        },
-        'transport'         => 'postMessage',
-    ));
-    
-    $wp_customize->add_control('mobile_logo_height_unit', array(
-        'label'   => __('Mobile Logo Height Unit', 'onespace-theme2'),
-        'section' => 'onespace_header_mobile',
-        'type'    => 'select',
-        'priority' => 5,
-        'choices' => array(
-            'px'   => __('Pixels (px)', 'onespace-theme2'),
-            '%'    => __('Percentage (%)', 'onespace-theme2'),
-            'em'   => __('Em (em)', 'onespace-theme2'),
-            'rem'  => __('Rem (rem)', 'onespace-theme2'),
-            'vh'   => __('Viewport Height (vh)', 'onespace-theme2'),
-            'auto' => __('Auto', 'onespace-theme2'),
-        ),
-    ));
-    
-    // Show Logo on Mobile
-    $wp_customize->add_setting('show_mobile_logo', array(
-        'default'           => true,
-        'sanitize_callback' => function($value) { return (bool) $value; },
-        'transport'         => 'postMessage',
-    ));
-    
-    $wp_customize->add_control('show_mobile_logo', array(
-        'label'   => __('Show Logo on Mobile', 'onespace-theme2'),
-        'section' => 'onespace_header_mobile',
-        'type'    => 'checkbox',
-        'priority' => 6,
-    ));
-    
-    // Show Tagline on Mobile
-    $wp_customize->add_setting('show_mobile_tagline', array(
-        'default'           => true,
-        'sanitize_callback' => function($value) { return (bool) $value; },
-        'transport'         => 'postMessage',
-    ));
-    
-    $wp_customize->add_control('show_mobile_tagline', array(
-        'label'   => __('Show Tagline on Mobile', 'onespace-theme2'),
-        'section' => 'onespace_header_mobile',
-        'type'    => 'checkbox',
-        'priority' => 7,
-    ));
-}
+// Duplicate mobile settings function removed - settings are now in onespace_register_dark_light_settings
 
 /**
  * Register search result control settings

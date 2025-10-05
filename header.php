@@ -34,16 +34,18 @@
             }
             
             // Mobile logo logic
-            $mobile_logo_id = get_theme_mod('header_mobile_logo');
+            $mobile_logo_id = get_theme_mod('mobile_logo');
             $has_mobile_logo = !empty($mobile_logo_id);
-            $show_mobile_logo = get_theme_mod('header_mobile_show_logo', true);
-            $show_mobile_tagline = get_theme_mod('header_mobile_show_tagline', true);
+            $show_mobile_logo = get_theme_mod('show_mobile_logo', true);
+            $show_mobile_tagline = get_theme_mod('show_mobile_tagline', false);
+            $mobile_logo_alignment = get_theme_mod('mobile_logo_alignment', 'left');
             
             // Build logo classes
             $logo_classes = array('site-logo');
             if ($has_mobile_logo) $logo_classes[] = 'has-mobile-logo';
             if (!$show_mobile_logo) $logo_classes[] = 'hide-mobile-logo';
             if (!$show_mobile_tagline) $logo_classes[] = 'hide-mobile-tagline';
+            $logo_classes[] = 'mobile-logo-' . $mobile_logo_alignment;
             $logo_class = implode(' ', $logo_classes);
             
             if (has_custom_logo()) : ?>

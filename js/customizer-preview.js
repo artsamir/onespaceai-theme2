@@ -32,6 +32,9 @@
         
         // Mobile icon styling
         setupMobileIconUpdates();
+        
+        // Mobile section settings
+        setupMobileUpdates();
     }
 
     /**
@@ -45,6 +48,13 @@
                 updateCSSProperty('--header-bg-color', to);
             });
         });
+        
+        // Header height
+        wp.customize('header_height', function(value) {
+            value.bind(function(to) {
+                updateHeaderHeight(to);
+            });
+        });
 
         // Tagline position
         wp.customize('header_tagline_position', function(value) {
@@ -53,51 +63,7 @@
             });
         });
         
-        // Mobile logo
-        wp.customize('header_mobile_logo', function(value) {
-            value.bind(function(to) {
-                updateMobileLogo(to);
-            });
-        });
-        
-        // Mobile logo dimensions
-        wp.customize('header_mobile_logo_width_value', function(value) {
-            value.bind(function(to) {
-                updateMobileLogoDimensions();
-            });
-        });
-        
-        wp.customize('header_mobile_logo_width_unit', function(value) {
-            value.bind(function(to) {
-                updateMobileLogoDimensions();
-            });
-        });
-        
-        wp.customize('header_mobile_logo_height_value', function(value) {
-            value.bind(function(to) {
-                updateMobileLogoDimensions();
-            });
-        });
-        
-        wp.customize('header_mobile_logo_height_unit', function(value) {
-            value.bind(function(to) {
-                updateMobileLogoDimensions();
-            });
-        });
-        
-        // Mobile logo visibility
-        wp.customize('header_mobile_show_logo', function(value) {
-            value.bind(function(to) {
-                updateMobileLogoVisibility(to);
-            });
-        });
-        
-        // Mobile tagline visibility
-        wp.customize('header_mobile_show_tagline', function(value) {
-            value.bind(function(to) {
-                updateMobileTaglineVisibility(to);
-            });
-        });
+        // Mobile logo handlers moved to setupMobileUpdates function
 
         // Tagline gap
         wp.customize('header_tagline_gap', function(value) {
@@ -866,10 +832,10 @@
      * Update mobile logo dimensions
      */
     function updateMobileLogoDimensions() {
-        const widthValue = wp.customize('header_mobile_logo_width_value')() || 150;
-        const widthUnit = wp.customize('header_mobile_logo_width_unit')() || 'px';
-        const heightValue = wp.customize('header_mobile_logo_height_value')() || 60;
-        const heightUnit = wp.customize('header_mobile_logo_height_unit')() || 'px';
+        const widthValue = wp.customize('mobile_logo_width_value')() || 120;
+        const widthUnit = wp.customize('mobile_logo_width_unit')() || 'px';
+        const heightValue = wp.customize('mobile_logo_height_value')() || 40;
+        const heightUnit = wp.customize('mobile_logo_height_unit')() || 'px';
         
         const width = widthValue + widthUnit;
         const height = heightValue + heightUnit;
@@ -914,6 +880,65 @@
             // Also directly hide taglines for immediate effect
             $siteTaglines.addClass('mobile-hidden');
         }
+    }
+    
+    /**
+     * Update mobile logo alignment
+     * Note: On mobile (768px and below), logo is forced to left corner for optimal UX
+     */
+    function updateMobileLogoAlignment(alignment) {
+        const $siteBranding = $('.site-branding');
+        const $mobileLogo = $('.mobile-logo');
+        
+        // Remove existing alignment classes
+        $siteBranding.removeClass('mobile-logo-left mobile-logo-center mobile-logo-right');
+        $mobileLogo.removeClass('mobile-logo-left mobile-logo-center mobile-logo-right');
+        
+        // Add new alignment class
+        const alignmentClass = 'mobile-logo-' + alignment;
+        $siteBranding.addClass(alignmentClass);
+        $mobileLogo.addClass(alignmentClass);
+        
+        // Update CSS custom property for alignment
+        updateCSSProperty('--mobile-logo-alignment', alignment);
+        
+        // Note: Mobile responsiveness is handled by CSS media queries
+        // Logo is forced to left corner on mobile for better UX
+    }
+    
+    /**
+     * Update header height
+     */
+    function updateHeaderHeight(height) {
+        const heightValue = height + 'px';
+        
+        // Update CSS custom property
+        updateCSSProperty('--header-height', heightValue);
+        
+        // Apply direct CSS for immediate effect
+        const style = `
+            <style id="header-height-preview">
+            .site-header {
+                height: ${heightValue} !important;
+                min-height: ${heightValue} !important;
+            }
+            .site-header .site-branding {
+                height: ${heightValue} !important;
+                display: flex !important;
+                align-items: center !important;
+            }
+            /* Mobile override for 768px */
+            @media (max-width: 768px) {
+                .site-header {
+                    height: 72px !important;
+                    min-height: 72px !important;
+                }
+            }
+            </style>
+        `;
+        
+        $('#header-height-preview').remove();
+        $('head').append(style);
     }
 
     /**
@@ -976,6 +1001,12 @@
             value.bind(updateMobileIconStyles);
         });
         
+    }
+    
+    /**
+     * Setup mobile section updates
+     */
+    function setupMobileUpdates() {
         // Mobile header spacing controls
         function updateMobileHeaderSpacing() {
             var paddingTop = wp.customize('mobile_header_padding_top')() || 8;
@@ -1020,10 +1051,10 @@
             value.bind(updateMobileHeaderSpacing);
         });
         
-        // Mobile logo controls (moved from Site Identity)
+        // Mobile logo controls
         wp.customize('mobile_logo', function(value) {
             value.bind(function(to) {
-                updateMobileLogo();
+                updateMobileLogo(to);
             });
         });
         
@@ -1060,6 +1091,13 @@
         wp.customize('show_mobile_tagline', function(value) {
             value.bind(function(to) {
                 updateMobileTaglineVisibility(to);
+            });
+        });
+        
+        // Mobile logo alignment
+        wp.customize('mobile_logo_alignment', function(value) {
+            value.bind(function(to) {
+                updateMobileLogoAlignment(to);
             });
         });
     }
