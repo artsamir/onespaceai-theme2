@@ -51,9 +51,9 @@ body {
     grid-template-columns: 1fr auto 1fr;
     grid-template-areas: "branding navigation utilities";
     align-items: center;
-    padding: 1rem;
+    padding: 5px;
     background-color: var(--header-bg-color, #ffffff);
-    height: var(--header-height, 56px);
+    height: var(--header-height, 72px);
     min-height: var(--header-height, 56px);
     position: relative;
 }
@@ -262,11 +262,17 @@ body.light-mode .toggle-icon:hover {
 }
 
 body.dark-mode .toggle-icon {
+    /* background: var(--toggle-bg-color, #2b2f36);
+    border-color: var(--toggle-border-color, rgba(255,255,255,0.2)); */
+    background-color: transparent;
+}
+body.dark-mode .dark-icon .toggle-icon{
     background: var(--toggle-bg-color, #2b2f36);
     border-color: var(--toggle-border-color, rgba(255,255,255,0.2));
 }
+
 body.dark-mode .toggle-icon:hover {
-    background: var(--toggle-hover-bg-dark, #3a3f47);
+    /* background: var(--toggle-hover-bg-dark, #3a3f47); */
 }
 
 /* Desktop - hide mobile-only elements */
@@ -437,6 +443,11 @@ body.dark-mode .toggle-icon:hover {
     /* Ensure navigation is hidden on mobile */
     .main-navigation {
         display: none;
+    }
+    
+    /* Show navigation when toggled */
+    .main-navigation.toggled {
+        display: block;
     }
     
     /* Mobile logo controls */

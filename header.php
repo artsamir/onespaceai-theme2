@@ -140,11 +140,8 @@
                 }
             }
             ?>
-            <!-- Mobile Menu Toggle -->
-            <button class="menu-toggle" type="button" aria-controls="primary-menu" aria-expanded="false" aria-label="<?php esc_attr_e('Toggle navigation', 'onespace-theme2'); ?>">
-                <span class="toggle-icon" aria-hidden="true">☰</span>
-            </button>
             
+            <!-- Mobile Search Toggle -->
             <button class="mobile-search-toggle" type="button" aria-label="<?php esc_attr_e('Open search', 'onespace-theme2'); ?>" aria-expanded="false">
                 <span class="toggle-icon" aria-hidden="true">🔍</span>
             </button>
@@ -209,6 +206,11 @@
                     </span>
                 </button>
             <?php endif; ?>
+
+            <!-- Mobile Menu Toggle -->
+            <button class="menu-toggle" type="button" aria-controls="primary-menu" aria-expanded="false" aria-label="<?php esc_attr_e('Toggle navigation', 'onespace-theme2'); ?>">
+                <span class="toggle-icon" aria-hidden="true">☰</span>
+            </button>
 
         </div><!-- .header-utilities -->
 
