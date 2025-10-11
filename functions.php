@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Theme constants
-define('ONESPACE_THEME_VERSION', '1.0.0');
+define('ONESPACE_THEME_VERSION', '1.0.1');
 define('ONESPACE_THEME_DIR', get_template_directory());
 define('ONESPACE_THEME_URI', get_template_directory_uri());
 
@@ -194,6 +194,10 @@ function onespace_load_customizer() {
     // Load home sidebar customizer settings (new)
     if ( file_exists( ONESPACE_THEME_DIR . '/inc/customizer-home-sidebar.php' ) ) {
         require_once ONESPACE_THEME_DIR . '/inc/customizer-home-sidebar.php';
+    }
+    // Load comment form customizer
+    if ( file_exists( ONESPACE_THEME_DIR . '/inc/customizer-comment-form.php' ) ) {
+        require_once ONESPACE_THEME_DIR . '/inc/customizer-comment-form.php';
     }
 }
 add_action('customize_register', 'onespace_load_customizer', 1);
@@ -710,3 +714,352 @@ function onespace_create_inc_directory() {
     }
 }
 add_action('after_setup_theme', 'onespace_create_inc_directory');
+
+/**
+ * Render custom comment form fields based on Customizer
+ */
+function onespace_render_custom_comment_form($post_id = null) {
+    if (!get_theme_mod('comment_form_enable_custom', true)) {
+        return false; // indicate not rendered
+    }
+
+    $heading     = get_theme_mod('comment_form_heading_text', __('Leave a Comment', 'onespace-theme2'));
+    $consentText = get_theme_mod('comment_form_consent_text', __('I agree to the terms and privacy policy.', 'onespace-theme2'));
+    $submitText  = get_theme_mod('comment_form_submit_text', __('Post Comment', 'onespace-theme2'));
+
+    $label_comment = get_theme_mod('comment_form_label_comment', __('Comment *', 'onespace-theme2'));
+    $label_name    = get_theme_mod('comment_form_label_name', __('Name *', 'onespace-theme2'));
+    $label_email   = get_theme_mod('comment_form_label_email', __('Email *', 'onespace-theme2'));
+    $label_website = get_theme_mod('comment_form_label_website', __('Website', 'onespace-theme2'));
+
+    $ph_comment = get_theme_mod('comment_form_ph_comment', __('Share your thoughts...', 'onespace-theme2'));
+    $ph_name    = get_theme_mod('comment_form_ph_name', __('Your name', 'onespace-theme2'));
+    $ph_email   = get_theme_mod('comment_form_ph_email', 'your@email.com');
+    $ph_website = get_theme_mod('comment_form_ph_website', 'https://yourwebsite.com');
+
+    $include_website = get_theme_mod('comment_form_include_website', true);
+    $extra_json      = get_theme_mod('comment_form_extra_fields_json', '');
+    $extras = array();
+    if ($extra_json) {
+        $decoded = json_decode($extra_json, true);
+        if (is_array($decoded)) {
+            $extras = $decoded;
+        }
+    }
+
+    $post_id = $post_id ? intval($post_id) : get_the_ID();
+    ?>
+    <div class="comment-form-section">
+        <h3 class="comment-form-heading"><?php echo esc_html($heading); ?></h3>
+        <form class="custom-comment-form" method="post" action="<?php echo esc_url( site_url('/wp-comments-post.php') ); ?>">
+            <div class="form-row">
+                <label class="checkbox-container">
+                    <input type="checkbox" name="privacy_policy" required />
+                    <span class="checkmark"></span>
+                    <?php echo esc_html($consentText); ?>
+                </label>
+            </div>
+
+            <div class="form-row">
+                <label for="comment"><?php echo esc_html($label_comment); ?></label>
+                <textarea name="comment" id="comment" placeholder="<?php echo esc_attr($ph_comment); ?>" required></textarea>
+            </div>
+
+            <div class="form-row-group">
+                <div class="form-row half">
+                    <label for="author"><?php echo esc_html($label_name); ?></label>
+                    <input type="text" name="author" id="author" placeholder="<?php echo esc_attr($ph_name); ?>" required />
+                </div>
+                <div class="form-row half">
+                    <label for="email"><?php echo esc_html($label_email); ?></label>
+                    <input type="email" name="email" id="email" placeholder="<?php echo esc_attr($ph_email); ?>" required />
+                </div>
+            </div>
+
+            <?php if ($include_website) : ?>
+            <div class="form-row">
+                <label for="url"><?php echo esc_html($label_website); ?></label>
+                <input type="url" name="url" id="url" placeholder="<?php echo esc_attr($ph_website); ?>" />
+            </div>
+            <?php endif; ?>
+
+            <?php
+            // Render extra fields
+            foreach ($extras as $field) {
+                if (!is_array($field) || empty($field['type'])) continue;
+                $type  = sanitize_key($field['type']);
+                $name  = isset($field['name']) ? sanitize_key($field['name']) : '';
+                $label = isset($field['label']) ? sanitize_text_field($field['label']) : '';
+                $ph    = isset($field['placeholder']) ? esc_attr($field['placeholder']) : '';
+                $req   = !empty($field['required']);
+                $opts  = isset($field['options']) && is_array($field['options']) ? $field['options'] : array();
+
+                echo '<div class="form-row">';
+                if ($label && $type !== 'label' && $type !== 'button') {
+                    echo '<label for="extra_' . esc_attr($name) . '">' . esc_html($label) . ($req ? ' *' : '') . '</label>';
+                }
+
+                switch ($type) {
+                    case 'label':
+                        echo '<div class="form-static-label">' . esc_html($label) . '</div>';
+                        break;
+                    case 'textarea':
+                        echo '<textarea name="extra_' . esc_attr($name) . '" id="extra_' . esc_attr($name) . '" placeholder="' . $ph . '" ' . ($req ? 'required' : '') . '></textarea>';
+                        break;
+                    case 'checkbox':
+                        echo '<label class="checkbox-container"><input type="checkbox" name="extra_' . esc_attr($name) . '" ' . ($req ? 'required' : '') . ' /><span class="checkmark"></span> ' . esc_html($label) . '</label>';
+                        break;
+                    case 'radio':
+                        foreach ($opts as $i => $opt) {
+                            $id = 'extra_' . $name . '_' . $i;
+                            echo '<label class="radio-inline"><input type="radio" name="extra_' . esc_attr($name) . '" id="' . esc_attr($id) . '" value="' . esc_attr($opt) . '" ' . ($req ? 'required' : '') . ' /> ' . esc_html($opt) . '</label> ';
+                        }
+                        break;
+                    case 'select':
+                        echo '<select name="extra_' . esc_attr($name) . '" id="extra_' . esc_attr($name) . '" ' . ($req ? 'required' : '') . '>';
+                        foreach ($opts as $opt) {
+                            echo '<option value="' . esc_attr($opt) . '">' . esc_html($opt) . '</option>';
+                        }
+                        echo '</select>';
+                        break;
+                    case 'button':
+                        echo '<button type="button" class="btn extra-btn">' . esc_html($label ?: __('Button', 'onespace-theme2')) . '</button>';
+                        break;
+                    default:
+                        // text, email, url, number etc.
+                        $input_type = in_array($type, array('text','email','url','number','date','time','tel'), true) ? $type : 'text';
+                        echo '<input type="' . esc_attr($input_type) . '" name="extra_' . esc_attr($name) . '" id="extra_' . esc_attr($name) . '" placeholder="' . $ph . '" ' . ($req ? 'required' : '') . ' />';
+                        break;
+                }
+
+                echo '</div>';
+            }
+            ?>
+
+            <div class="form-row">
+                <label class="checkbox-container">
+                    <input type="checkbox" name="save_info" />
+                    <span class="checkmark"></span>
+                    <?php esc_html_e('Save my name, email, and website in this browser for the next time I comment.', 'onespace-theme2'); ?>
+                </label>
+            </div>
+
+            <input type="hidden" name="comment_post_ID" value="<?php echo esc_attr($post_id); ?>" />
+            <input type="hidden" name="comment_parent" value="0" />
+            <?php do_action('comment_form', $post_id); ?>
+            <button type="submit" class="comment-submit-btn"><?php echo esc_html($submitText); ?></button>
+        </form>
+    </div>
+    <?php
+    return true; // rendered
+}
+
+/**
+ * AJAX handler for loading blog content
+ */
+function onespace_load_blog_content() {
+    // Check nonce for security
+    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'onespace_ajax_nonce')) {
+        wp_send_json_error('Security check failed');
+        return;
+    }
+    
+    $post_id = intval($_POST['post_id']);
+    
+    if (!$post_id) {
+        wp_send_json_error('Invalid post ID');
+        return;
+    }
+    
+    // Get the post
+    $post = get_post($post_id);
+    
+    if (!$post || $post->post_status !== 'publish') {
+        wp_send_json_error('Post not found');
+        return;
+    }
+    
+    // Set up post data - use $GLOBALS to avoid variable conflict
+    $GLOBALS['post'] = $post;
+    setup_postdata($post);
+    
+    ob_start();
+    
+    // Calculate reading time
+    $word_count = str_word_count(strip_tags($post->post_content));
+    $reading_time = ceil($word_count / 200); // Average reading speed
+    
+    // Get author data
+    $author_id = $post->post_author;
+    $author_name = get_the_author_meta('display_name', $author_id);
+    $author_avatar = get_avatar_url($author_id, array('size' => 32));
+    
+    // Get post view count (you might need a plugin for this, for now we'll use a placeholder)
+    $view_count = get_post_meta($post->ID, 'post_views_count', true) ?: rand(50, 500);
+    
+    ?>
+    <article id="post-<?php echo $post->ID; ?>" class="single-post-article ajax-loaded">
+        
+        <!-- 1. Post Title -->
+        <header class="single-post-header">
+            <h1 class="single-post-title"><?php echo get_the_title($post); ?></h1>
+        </header>
+
+        <!-- 2. Main Image -->
+        <?php if (has_post_thumbnail($post->ID)) : ?>
+            <div class="single-post-featured-image">
+                <?php echo get_the_post_thumbnail($post->ID, 'large', ['alt' => get_the_title($post)]); ?>
+            </div>
+        <?php endif; ?>
+
+        <!-- 3. Post Meta Information Box -->
+        <div class="single-post-meta-box">
+            <div class="post-author-info">
+                <img src="<?php echo esc_url($author_avatar); ?>" alt="<?php echo esc_attr($author_name); ?>" class="author-avatar">
+                <span class="author-name">By <?php echo esc_html($author_name); ?></span>
+            </div>
+            <div class="post-dates">
+                <span class="post-published">
+                    <i class="icon-calendar"></i>
+                    Published: <?php echo esc_html(get_the_date('M j, Y', $post)); ?>
+                </span>
+                <span class="post-updated">
+                    <i class="icon-clock"></i>
+                    Updated: <?php echo esc_html(get_the_modified_date('M j, Y', $post)); ?>
+                </span>
+            </div>
+            <div class="post-stats">
+                <span class="post-views">
+                    <i class="icon-eye"></i>
+                    <?php echo number_format($view_count); ?> views
+                </span>
+                <span class="reading-time">
+                    <i class="icon-time"></i>
+                    <?php echo $reading_time; ?> min read
+                </span>
+                <span class="current-reading-time" id="current-reading-time">
+                    <i class="icon-stopwatch"></i>
+                    Reading: <span id="reading-timer">0m</span>
+                </span>
+            </div>
+        </div>
+
+        <!-- 4. Post Content -->
+        <div class="single-post-content">
+            <?php 
+            $content = get_the_content(null, false, $post);
+            $content = apply_filters('the_content', $content);
+            echo $content;
+            ?>
+        </div>
+
+        <!-- 5. Tags Section -->
+        <?php 
+        $tags = get_the_tags($post->ID);
+        if ($tags) : ?>
+            <div class="single-post-tags-section">
+                <h3 class="tags-heading">Tags</h3>
+                <div class="tags-container">
+                    <?php foreach($tags as $tag) : ?>
+                        <a href="<?php echo get_tag_link($tag->term_id); ?>" class="tag-item">
+                            #<?php echo esc_html($tag->name); ?>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <!-- 6. About Author Section -->
+        <div class="about-author-section">
+            <h3 class="about-heading">About Suman</h3>
+            <div class="about-content">
+                <img src="<?php echo esc_url($author_avatar); ?>" alt="Suman" class="about-author-avatar">
+                <div class="about-text">
+                    <p>Hi I'm Suman from West Bengal. Driven by my passion for AI and new technologies, I started this blog. Here, you'll find practical tips to earn money from home, honest tool reviews, and easy-to-follow tutorials.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. Comment Form (Customizer powered) -->
+        <?php if ( ! onespace_render_custom_comment_form($post->ID) ) : ?>
+            <?php comment_form(array('comment_field' => '<p><textarea name="comment" required></textarea></p>')); ?>
+        <?php endif; ?>
+
+        <!-- 8. Previous/Next Post Navigation -->
+        <?php
+        $prev_post = get_previous_post();
+        $next_post = get_next_post();
+        if ($prev_post || $next_post) :
+        ?>
+            <div class="post-navigation-section">
+                <div class="nav-posts">
+                    <?php if ($prev_post) : ?>
+                        <div class="nav-post prev-post">
+                            <a href="<?php echo get_permalink($prev_post->ID); ?>" class="nav-link ajax-blog-link" data-post-id="<?php echo $prev_post->ID; ?>">
+                                <div class="nav-post-image">
+                                    <?php if (has_post_thumbnail($prev_post->ID)) : ?>
+                                        <?php echo get_the_post_thumbnail($prev_post->ID, 'thumbnail'); ?>
+                                    <?php else : ?>
+                                        <div class="no-image">No Image</div>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="nav-post-content">
+                                    <span class="nav-label">← Previous Post</span>
+                                    <span class="nav-title"><?php echo get_the_title($prev_post); ?></span>
+                                </div>
+                            </a>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if ($next_post) : ?>
+                        <div class="nav-post next-post">
+                            <a href="<?php echo get_permalink($next_post->ID); ?>" class="nav-link ajax-blog-link" data-post-id="<?php echo $next_post->ID; ?>">
+                                <div class="nav-post-content">
+                                    <span class="nav-label">Next Post →</span>
+                                    <span class="nav-title"><?php echo get_the_title($next_post); ?></span>
+                                </div>
+                                <div class="nav-post-image">
+                                    <?php if (has_post_thumbnail($next_post->ID)) : ?>
+                                        <?php echo get_the_post_thumbnail($next_post->ID, 'thumbnail'); ?>
+                                    <?php else : ?>
+                                        <div class="no-image">No Image</div>
+                                    <?php endif; ?>
+                                </div>
+                            </a>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <!-- Back to Posts Button -->
+        <div class="single-post-navigation">
+            <a href="#" class="back-to-home-grid ajax-back-to-grid">
+                ← <?php esc_html_e('Back to Posts', 'onespace-theme2'); ?>
+            </a>
+        </div>
+
+    </article>
+    <?php
+    
+    $content = ob_get_clean();
+    wp_reset_postdata();
+    
+    wp_send_json_success($content);
+}
+add_action('wp_ajax_load_blog_content', 'onespace_load_blog_content');
+add_action('wp_ajax_nopriv_load_blog_content', 'onespace_load_blog_content');
+
+/**
+ * Enqueue AJAX script for blog functionality
+ */
+function onespace_enqueue_ajax_script() {
+    if (is_home() || is_front_page() || is_single()) {
+        wp_enqueue_script('onespace-ajax-blog', get_template_directory_uri() . '/js/ajax-blog.js', array('jquery'), ONESPACE_THEME_VERSION, true);
+        wp_localize_script('onespace-ajax-blog', 'onespace_ajax', array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('onespace_ajax_nonce'),
+        ));
+    }
+}
+add_action('wp_enqueue_scripts', 'onespace_enqueue_ajax_script');

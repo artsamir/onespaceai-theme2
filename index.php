@@ -83,7 +83,7 @@ get_header();
                             </div>
                             <p class="card-excerpt"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 28, '…')); ?></p>
                             <div class="card-actions">
-                                <a href="<?php the_permalink(); ?>" class="read-more-btn" aria-label="<?php printf(esc_attr__('Read more about %s', 'onespace-theme2'), get_the_title()); ?>">
+                                <a href="<?php the_permalink(); ?>" class="read-more-btn" data-post-id="<?php the_ID(); ?>" aria-label="<?php printf(esc_attr__('Read more about %s', 'onespace-theme2'), get_the_title()); ?>">
                                     <?php esc_html_e('Read More', 'onespace-theme2'); ?> →
                                 </a>
                             </div>
@@ -166,7 +166,7 @@ get_header();
                         $title = get_the_title($post_obj->ID);
                         ?>
                         <li class="recent-post-item">
-                            <a href="<?php echo esc_url($permalink); ?>" class="recent-post-link">
+                            <a href="<?php echo esc_url($permalink); ?>" class="recent-post-link ajax-blog-link" data-post-id="<?php echo $post_obj->ID; ?>">
                                 <?php if (has_post_thumbnail($post_obj->ID)) : ?>
                                     <span class="recent-thumb"><?php echo get_the_post_thumbnail($post_obj->ID, 'thumbnail', ['alt' => esc_attr($title)]); ?></span>
                                 <?php endif; ?>
